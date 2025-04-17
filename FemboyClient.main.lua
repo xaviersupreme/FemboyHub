@@ -1,18 +1,16 @@
--- Roblox Executor UI Redesign
--- Created by Cody
 
--- Services
+-- services
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
--- Variables
+-- variables
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local Camera = workspace.CurrentCamera
 
--- UI Configuration (Customizable)
+-- ui configuration (Customizable)
 local Config = {
     UI = {
         MainColor = Color3.fromRGB(45, 45, 45),
@@ -48,14 +46,14 @@ local Config = {
     }
 }
 
--- Create ScreenGui
+-- create ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ExecutorUI"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = game.CoreGui
 
--- Create Main Frame
+-- create Main Frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 600, 0, 350)
@@ -66,12 +64,12 @@ MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
--- Add Corner Radius
+-- add corner radius
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = Config.UI.CornerRadius
 UICorner.Parent = MainFrame
 
--- Create Title Bar
+-- create title bar
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
 TitleBar.Size = UDim2.new(1, 0, 0, 40)
@@ -79,12 +77,12 @@ TitleBar.BackgroundColor3 = Config.UI.AccentColor
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
 
--- Add Corner Radius to Title Bar
+-- add corner radius to title bar
 local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = Config.UI.CornerRadius
 TitleCorner.Parent = TitleBar
 
--- Fix Title Bar Corners
+-- fix title bar corners
 local TitleFix = Instance.new("Frame")
 TitleFix.Name = "TitleFix"
 TitleFix.Size = UDim2.new(1, 0, 0.5, 0)
@@ -93,7 +91,7 @@ TitleFix.BackgroundColor3 = Config.UI.AccentColor
 TitleFix.BorderSizePixel = 0
 TitleFix.Parent = TitleBar
 
--- Title Text
+-- title text
 local TitleText = Instance.new("TextLabel")
 TitleText.Name = "TitleText"
 TitleText.Size = UDim2.new(1, -40, 1, 0)
@@ -106,7 +104,7 @@ TitleText.Font = Config.UI.Font
 TitleText.TextXAlignment = Enum.TextXAlignment.Left
 TitleText.Parent = TitleBar
 
--- Close Button
+-- close button
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
 CloseButton.Size = UDim2.new(0, 30, 0, 30)
@@ -118,12 +116,12 @@ CloseButton.TextSize = 16
 CloseButton.Font = Config.UI.Font
 CloseButton.Parent = TitleBar
 
--- Add Corner Radius to Close Button
+-- add corner radius to close button
 local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 6)
 CloseCorner.Parent = CloseButton
 
--- Tab Container
+-- tab container
 local TabContainer = Instance.new("Frame")
 TabContainer.Name = "TabContainer"
 TabContainer.Size = UDim2.new(0, 120, 1, -40)
@@ -132,12 +130,12 @@ TabContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 TabContainer.BorderSizePixel = 0
 TabContainer.Parent = MainFrame
 
--- Add Corner Radius to Tab Container
+-- add corner radius to tab container
 local TabContainerCorner = Instance.new("UICorner")
 TabContainerCorner.CornerRadius = Config.UI.CornerRadius
 TabContainerCorner.Parent = TabContainer
 
--- Fix Tab Container Corners
+-- fix tab container corners
 local TabContainerFix = Instance.new("Frame")
 TabContainerFix.Name = "TabContainerFix"
 TabContainerFix.Size = UDim2.new(0.5, 0, 1, 0)
@@ -146,7 +144,7 @@ TabContainerFix.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 TabContainerFix.BorderSizePixel = 0
 TabContainerFix.Parent = TabContainer
 
--- Content Frame
+-- content frame
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
 ContentFrame.Size = UDim2.new(1, -130, 1, -50)
@@ -154,7 +152,7 @@ ContentFrame.Position = UDim2.new(0, 125, 0, 45)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.Parent = MainFrame
 
--- Create Tab Buttons
+-- create tab buttons
 local function CreateTab(name, icon)
     local TabButton = Instance.new("TextButton")
     TabButton.Name = name .. "Tab"
@@ -167,12 +165,12 @@ local function CreateTab(name, icon)
     TabButton.Font = Config.UI.Font
     TabButton.Parent = TabContainer
     
-    -- Add Corner Radius to Tab Button
+    -- add corner radius to tab button
     local TabButtonCorner = Instance.new("UICorner")
     TabButtonCorner.CornerRadius = UDim.new(0, 6)
     TabButtonCorner.Parent = TabButton
     
-    -- Create Content Frame for this tab
+    -- create content frame for this tab
     local TabContent = Instance.new("ScrollingFrame")
     TabContent.Name = name .. "Content"
     TabContent.Size = UDim2.new(1, 0, 1, 0)
@@ -185,7 +183,7 @@ local function CreateTab(name, icon)
     TabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabContent.Parent = ContentFrame
     
-    -- Add padding to content
+    -- add padding to content
     local UIPadding = Instance.new("UIPadding")
     UIPadding.PaddingLeft = UDim.new(0, 10)
     UIPadding.PaddingRight = UDim.new(0, 10)
@@ -193,21 +191,21 @@ local function CreateTab(name, icon)
     UIPadding.PaddingBottom = UDim.new(0, 10)
     UIPadding.Parent = TabContent
     
-    -- Add list layout to content
+    -- add list layout to content
     local UIListLayout = Instance.new("UIListLayout")
     UIListLayout.Padding = UDim.new(0, 10)
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Parent = TabContent
     
     TabButton.MouseButton1Click:Connect(function()
-        -- Hide all tab contents
+        -- hide all tab contents
         for _, child in pairs(ContentFrame:GetChildren()) do
             if child:IsA("ScrollingFrame") then
                 child.Visible = false
             end
         end
         
-        -- Reset all tab button colors
+        -- reset all tab button colors
         for _, child in pairs(TabContainer:GetChildren()) do
             if child:IsA("TextButton") then
                 TweenService:Create(child, TweenInfo.new(
@@ -220,7 +218,7 @@ local function CreateTab(name, icon)
             end
         end
         
-        -- Show this tab content and highlight button
+        -- show this tab content and highlight button
         TabContent.Visible = true
         TweenService:Create(TabButton, TweenInfo.new(
             Config.Animation.TweenSpeed, 
@@ -234,7 +232,7 @@ local function CreateTab(name, icon)
     return TabContent
 end
 
--- Create UI Elements
+-- create UI elements
 local function CreateLabel(parent, text)
     local Label = Instance.new("TextLabel")
     Label.Size = UDim2.new(1, 0, 0, 25)
@@ -258,12 +256,12 @@ local function CreateButton(parent, text, callback)
     Button.Font = Config.UI.Font
     Button.Parent = parent
     
-    -- Add Corner Radius to Button
+    -- add corner radius to button
     local ButtonCorner = Instance.new("UICorner")
     ButtonCorner.CornerRadius = UDim.new(0, 6)
     ButtonCorner.Parent = Button
     
-    -- Button Animation
+    -- button animation
     Button.MouseEnter:Connect(function()
         TweenService:Create(Button, TweenInfo.new(
             Config.Animation.TweenSpeed, 
@@ -314,7 +312,7 @@ local function CreateToggle(parent, text, default, callback)
     ToggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     ToggleButton.Parent = ToggleFrame
     
-    -- Add Corner Radius to Toggle Button
+    -- add corner radius to toggle button
     local ToggleButtonCorner = Instance.new("UICorner")
     ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
     ToggleButtonCorner.Parent = ToggleButton
@@ -325,15 +323,14 @@ local function CreateToggle(parent, text, default, callback)
     ToggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     ToggleCircle.Parent = ToggleButton
     
-    -- Add Corner Radius to Toggle Circle
+    -- add corner radius to toggle circle
     local ToggleCircleCorner = Instance.new("UICorner")
     ToggleCircleCorner.CornerRadius = UDim.new(1, 0)
-      -- Continuing from where we left off with the toggle component
     
-    -- Set default state
+    -- set default state
     local Enabled = default or false
     
-    -- Update toggle appearance based on state
+    -- update toggle appearance based on state
     local function UpdateToggle()
         if Enabled then
             TweenService:Create(ToggleButton, TweenInfo.new(
@@ -370,10 +367,10 @@ local function CreateToggle(parent, text, default, callback)
         end
     end
     
-    -- Initialize toggle
+    -- initialize toggle
     UpdateToggle()
     
-    -- Make toggle clickable
+    -- make toggle clickable
     ToggleButton.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             Enabled = not Enabled
@@ -382,7 +379,7 @@ local function CreateToggle(parent, text, default, callback)
         end
     end)
     
-    -- Make label clickable too
+    -- make label clickable too
     ToggleLabel.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             Enabled = not Enabled
@@ -437,7 +434,7 @@ local function CreateSlider(parent, text, min, max, default, callback)
     SliderBackground.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     SliderBackground.Parent = SliderFrame
     
-    -- Add Corner Radius to Slider Background
+    -- add corner radius to slider background
     local SliderBackgroundCorner = Instance.new("UICorner")
     SliderBackgroundCorner.CornerRadius = UDim.new(0, 5)
     SliderBackgroundCorner.Parent = SliderBackground
@@ -447,7 +444,7 @@ local function CreateSlider(parent, text, min, max, default, callback)
     SliderFill.BackgroundColor3 = Config.UI.AccentColor
     SliderFill.Parent = SliderBackground
     
-    -- Add Corner Radius to Slider Fill
+    -- add corner radius to slider fill
     local SliderFillCorner = Instance.new("UICorner")
     SliderFillCorner.CornerRadius = UDim.new(0, 5)
     SliderFillCorner.Parent = SliderFill
@@ -459,16 +456,16 @@ local function CreateSlider(parent, text, min, max, default, callback)
     SliderButton.Text = ""
     SliderButton.Parent = SliderFrame
     
-    -- Add Corner Radius to Slider Button
+    -- add corner radius to slider button
     local SliderButtonCorner = Instance.new("UICorner")
     SliderButtonCorner.CornerRadius = UDim.new(1, 0)
     SliderButtonCorner.Parent = SliderButton
     
-    -- Variables
+    -- variables
     local Value = default
     local Dragging = false
     
-    -- Update slider appearance
+    -- update slider appearance
     local function UpdateSlider()
         local Percent = (Value - min) / (max - min)
         SliderFill.Size = UDim2.new(Percent, 0, 1, 0)
@@ -476,7 +473,7 @@ local function CreateSlider(parent, text, min, max, default, callback)
         SliderValueLabel.Text = tostring(math.floor(Value * 100) / 100)
     end
     
-    -- Handle slider interaction
+    -- handle slider interaction
     SliderButton.MouseButton1Down:Connect(function()
         Dragging = true
     end)
@@ -507,7 +504,7 @@ local function CreateSlider(parent, text, min, max, default, callback)
         end
     end)
     
-    -- Initialize slider
+    -- initialize slider
     UpdateSlider()
     
     return {
@@ -549,12 +546,12 @@ local function CreateDropdown(parent, text, options, default, callback)
     DropdownButton.Font = Config.UI.Font
     DropdownButton.Parent = DropdownFrame
     
-    -- Add Corner Radius to Dropdown Button
+    -- add corner radius to dropdown button
     local DropdownButtonCorner = Instance.new("UICorner")
     DropdownButtonCorner.CornerRadius = UDim.new(0, 6)
     DropdownButtonCorner.Parent = DropdownButton
     
-    -- Create dropdown menu
+    -- create dropdown menu
     local DropdownMenu = Instance.new("Frame")
     DropdownMenu.Size = UDim2.new(1, 0, 0, #options * 30)
     DropdownMenu.Position = UDim2.new(0, 0, 1, 5)
@@ -563,12 +560,12 @@ local function CreateDropdown(parent, text, options, default, callback)
     DropdownMenu.ZIndex = 10
     DropdownMenu.Parent = DropdownButton
     
-    -- Add Corner Radius to Dropdown Menu
+    -- add corner radius to dropdown menu
     local DropdownMenuCorner = Instance.new("UICorner")
     DropdownMenuCorner.CornerRadius = UDim.new(0, 6)
     DropdownMenuCorner.Parent = DropdownMenu
     
-    -- Create dropdown options
+    -- create dropdown options
     for i, option in ipairs(options) do
         local OptionButton = Instance.new("TextButton")
         OptionButton.Size = UDim2.new(1, 0, 0, 30)
@@ -582,7 +579,7 @@ local function CreateDropdown(parent, text, options, default, callback)
         OptionButton.ZIndex = 11
         OptionButton.Parent = DropdownMenu
         
-        -- Option button hover effect
+        -- option button hover effect
         OptionButton.MouseEnter:Connect(function()
             TweenService:Create(OptionButton, TweenInfo.new(
                 Config.Animation.TweenSpeed, 
@@ -603,7 +600,7 @@ local function CreateDropdown(parent, text, options, default, callback)
             }):Play()
         end)
         
-        -- Option selection
+        -- option selection
         OptionButton.MouseButton1Click:Connect(function()
             DropdownButton.Text = option
             DropdownMenu.Visible = false
@@ -611,12 +608,12 @@ local function CreateDropdown(parent, text, options, default, callback)
         end)
     end
     
-    -- Toggle dropdown menu
+    -- toggle dropdown menu
     DropdownButton.MouseButton1Click:Connect(function()
         DropdownMenu.Visible = not DropdownMenu.Visible
     end)
     
-    -- Close dropdown when clicking elsewhere
+    -- close dropdown when clicking elsewhere
     UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             local MousePosition = UserInputService:GetMouseLocation()
@@ -647,17 +644,17 @@ local function CreateDropdown(parent, text, options, default, callback)
             return DropdownButton.Text
         end,
         Refresh = function(newOptions, keepSelection)
-            -- Clear existing options
+            -- clear existing options
             for _, child in pairs(DropdownMenu:GetChildren()) do
                 if child:IsA("TextButton") then
                     child:Destroy()
                 end
             end
             
-            -- Update size
+            -- update size
             DropdownMenu.Size = UDim2.new(1, 0, 0, #newOptions * 30)
             
-            -- Add new options
+            -- add new options
             for i, option in ipairs(newOptions) do
                 local OptionButton = Instance.new("TextButton")
                 OptionButton.Size = UDim2.new(1, 0, 0, 30)
@@ -698,7 +695,7 @@ local function CreateDropdown(parent, text, options, default, callback)
                 end)
             end
             
-            -- Update current selection
+            -- update current selection
             if not keepSelection or not table.find(newOptions, DropdownButton.Text) then
                 DropdownButton.Text = newOptions[1] or "Select..."
             end
@@ -729,7 +726,7 @@ local function CreateTextBox(parent, text, placeholder, callback)
     TextBoxBackground.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     TextBoxBackground.Parent = TextBoxFrame
     
-    -- Add Corner Radius to TextBox Background
+    -- add corner radius to textbox background
     local TextBoxBackgroundCorner = Instance.new("UICorner")
     TextBoxBackgroundCorner.CornerRadius = UDim.new(0, 6)
     TextBoxBackgroundCorner.Parent = TextBoxBackground
@@ -785,12 +782,12 @@ local function CreateColorPicker(parent, text, default, callback)
     ColorDisplay.BackgroundColor3 = default or Color3.fromRGB(255, 255, 255)
     ColorDisplay.Parent = ColorPickerFrame
     
-    -- Add Corner Radius to Color Display
+    -- add corner radius to color display
     local ColorDisplayCorner = Instance.new("UICorner")
     ColorDisplayCorner.CornerRadius = UDim.new(0, 4)
     ColorDisplayCorner.Parent = ColorDisplay
     
-    -- Create color picker popup
+    -- create color picker popup
     local ColorPickerPopup = Instance.new("Frame")
     ColorPickerPopup.Size = UDim2.new(0, 200, 0, 220)
     ColorPickerPopup.Position = UDim2.new(1, -200, 1, 10)
@@ -799,25 +796,25 @@ local function CreateColorPicker(parent, text, default, callback)
     ColorPickerPopup.ZIndex = 100
     ColorPickerPopup.Parent = ColorPickerFrame
     
-    -- Add Corner Radius to Color Picker Popup
+    -- add corner radius to color picker popup
     local ColorPickerPopupCorner = Instance.new("UICorner")
     ColorPickerPopupCorner.CornerRadius = UDim.new(0, 6)
     ColorPickerPopupCorner.Parent = ColorPickerPopup
     
-    -- Create color picker components (simplified version)
+    -- create color picker components (simplified version)
     local ColorArea = Instance.new("ImageButton")
     ColorArea.Size = UDim2.new(1, -20, 0, 150)
     ColorArea.Position = UDim2.new(0, 10, 0, 10)
-    ColorArea.Image = "rbxassetid://4155801252" -- Color picker image
+    ColorArea.Image = "rbxassetid://4155801252" -- color picker image
     ColorArea.ZIndex = 101
     ColorArea.Parent = ColorPickerPopup
     
-    -- Add Corner Radius to Color Area
+    -- add corner radius to color area
     local ColorAreaCorner = Instance.new("UICorner")
     ColorAreaCorner.CornerRadius = UDim.new(0, 4)
     ColorAreaCorner.Parent = ColorArea
     
-    -- RGB Inputs
+    -- RGB inputs
     local RInput = Instance.new("TextBox")
     RInput.Size = UDim2.new(0, 40, 0, 25)
     RInput.Position = UDim2.new(0, 10, 0, 170)
@@ -854,7 +851,7 @@ local function CreateColorPicker(parent, text, default, callback)
     BInput.ZIndex = 101
     BInput.Parent = ColorPickerPopup
     
-    -- Add Corner Radius to RGB Inputs
+    -- add corner radius to RGB inputs
     local RInputCorner = Instance.new("UICorner")
     RInputCorner.CornerRadius = UDim.new(0, 4)
     RInputCorner.Parent = RInput
@@ -867,7 +864,7 @@ local function CreateColorPicker(parent, text, default, callback)
     BInputCorner.CornerRadius = UDim.new(0, 4)
     BInputCorner.Parent = BInput
     
-    -- Apply Button
+    -- apply button
     local ApplyButton = Instance.new("TextButton")
     ApplyButton.Size = UDim2.new(0, 80, 0, 25)
     ApplyButton.Position = UDim2.new(1, -90, 0, 170)
@@ -879,15 +876,15 @@ local function CreateColorPicker(parent, text, default, callback)
     ApplyButton.ZIndex = 101
     ApplyButton.Parent = ColorPickerPopup
     
-    -- Add Corner Radius to Apply Button
+    -- add corner radius to apply button
     local ApplyButtonCorner = Instance.new("UICorner")
     ApplyButtonCorner.CornerRadius = UDim.new(0, 4)
     ApplyButtonCorner.Parent = ApplyButton
     
-    -- Current selected color
+    -- current selected color
     local SelectedColor = default
     
-    -- Update color from RGB inputs
+    -- update color from RGB inputs
     local function UpdateColorFromInputs()
         local r = tonumber(RInput.Text) or 0
         local g = tonumber(GInput.Text) or 0
@@ -901,14 +898,14 @@ local function CreateColorPicker(parent, text, default, callback)
         ColorDisplay.BackgroundColor3 = SelectedColor
     end
     
-    -- Update RGB inputs from color
+    -- update RGB inputs from color
     local function UpdateInputsFromColor()
         RInput.Text = tostring(math.floor(SelectedColor.R * 255))
         GInput.Text = tostring(math.floor(SelectedColor.G * 255))
         BInput.Text = tostring(math.floor(SelectedColor.B * 255))
     end
     
-    -- Handle color area click
+    -- handle color area click
     ColorArea.MouseButton1Down:Connect(function()
         local Connection
         Connection = RunService.RenderStepped:Connect(function()
@@ -917,12 +914,12 @@ local function CreateColorPicker(parent, text, default, callback)
                 local RelativeX = math.clamp((MousePosition.X - ColorArea.AbsolutePosition.X) / ColorArea.AbsoluteSize.X, 0, 1)
                 local RelativeY = math.clamp((MousePosition.Y - ColorArea.AbsolutePosition.Y) / ColorArea.AbsoluteSize.Y, 0, 1)
                 
-                -- Simple HSV to RGB conversion (simplified for this example)
+                -- simple HSV to RGB conversion (simplified)
                 local h = RelativeX
                 local s = 1 - RelativeY
                 local v = 1
                 
-                -- Convert HSV to RGB (simplified)
+                -- convert HSV to RGB (simplified)
                 local r, g, b
                 local i = math.floor(h * 6)
                 local f = h * 6 - i
@@ -955,25 +952,25 @@ local function CreateColorPicker(parent, text, default, callback)
         end)
     end)
     
-    -- Handle RGB input changes
+    -- handle RGB input changes
     RInput.FocusLost:Connect(function() UpdateColorFromInputs() end)
     GInput.FocusLost:Connect(function() UpdateColorFromInputs() end)
     BInput.FocusLost:Connect(function() UpdateColorFromInputs() end)
     
-    -- Apply button
+    -- apply button
     ApplyButton.MouseButton1Click:Connect(function()
         ColorPickerPopup.Visible = false
         callback(SelectedColor)
     end)
     
-    -- Toggle color picker popup
+    -- toggle color picker popup
     ColorDisplay.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             ColorPickerPopup.Visible = not ColorPickerPopup.Visible
         end
     end)
     
-    -- Close color picker when clicking elsewhere
+    -- close color picker when clicking elsewhere
     UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 and ColorPickerPopup.Visible then
             local MousePosition = UserInputService:GetMouseLocation()
@@ -1005,14 +1002,14 @@ local function CreateColorPicker(parent, text, default, callback)
     }
 end
 
--- Create script editor
+-- create script editor
 local function CreateScriptEditor(parent)
     local EditorFrame = Instance.new("Frame")
     EditorFrame.Size = UDim2.new(1, 0, 1, -50)
     EditorFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     EditorFrame.Parent = parent
     
-    -- Add Corner Radius to Editor Frame
+    -- add corner radius to editor frame
     local EditorFrameCorner = Instance.new("UICorner")
     EditorFrameCorner.CornerRadius = UDim.new(0, 6)
     EditorFrameCorner.Parent = EditorFrame
@@ -1043,14 +1040,14 @@ local function CreateScriptEditor(parent)
     EditorTextBox.MultiLine = true
     EditorTextBox.Parent = EditorScrollFrame
     
-    -- Button Container
+    -- button container
     local ButtonContainer = Instance.new("Frame")
     ButtonContainer.Size = UDim2.new(1, 0, 0, 40)
     ButtonContainer.Position = UDim2.new(0, 0, 1, -40)
     ButtonContainer.BackgroundTransparency = 1
     ButtonContainer.Parent = parent
     
-    -- Execute Button
+    -- execute button
     local ExecuteButton = Instance.new("TextButton")
     ExecuteButton.Size = UDim2.new(0.3, -10, 1, -10)
     ExecuteButton.Position = UDim2.new(0, 5, 0, 5)
@@ -1061,12 +1058,12 @@ local function CreateScriptEditor(parent)
     ExecuteButton.Font = Config.UI.Font
     ExecuteButton.Parent = ButtonContainer
     
-    -- Add Corner Radius to Execute Button
+    -- add corner radius to execute button
     local ExecuteButtonCorner = Instance.new("UICorner")
     ExecuteButtonCorner.CornerRadius = UDim.new(0, 6)
     ExecuteButtonCorner.Parent = ExecuteButton
     
-    -- Clear Button
+    -- clear button
     local ClearButton = Instance.new("TextButton")
     ClearButton.Size = UDim2.new(0.3, -10, 1, -10)
     ClearButton.Position = UDim2.new(0.35, 0, 0, 5)
@@ -1077,12 +1074,12 @@ local function CreateScriptEditor(parent)
     ClearButton.Font = Config.UI.Font
     ClearButton.Parent = ButtonContainer
     
-    -- Add Corner Radius to Clear Button
+    -- add corner radius to clear button
     local ClearButtonCorner = Instance.new("UICorner")
     ClearButtonCorner.CornerRadius = UDim.new(0, 6)
     ClearButtonCorner.Parent = ClearButton
     
-    -- Save Button
+    -- save Button
     local SaveButton = Instance.new("TextButton")
     SaveButton.Size = UDim2.new(0.3, -10, 1, -10)
     SaveButton.Position = UDim2.new(0.7, 0, 0, 5)
@@ -1093,12 +1090,12 @@ local function CreateScriptEditor(parent)
     SaveButton.Font = Config.UI.Font
     SaveButton.Parent = ButtonContainer
     
-    -- Add Corner Radius to Save Button
+    -- add corner radius to save button
     local SaveButtonCorner = Instance.new("UICorner")
     SaveButtonCorner.CornerRadius = UDim.new(0, 6)
     SaveButtonCorner.Parent = SaveButton
     
-    -- Button Functionality
+    -- button functionality
     ExecuteButton.MouseButton1Click:Connect(function()
         local success, err = pcall(function()
             loadstring(EditorTextBox.Text)()
@@ -1113,11 +1110,11 @@ local function CreateScriptEditor(parent)
         EditorTextBox.Text = ""
     end)
     
-    -- Saved scripts system
+    -- saved scripts system
     local SavedScripts = {}
     
     SaveButton.MouseButton1Click:Connect(function()
-        -- Create a simple save dialog
+        -- create a simple save dialog
         local SaveDialog = Instance.new("Frame")
         SaveDialog.Size = UDim2.new(0, 250, 0, 100)
         SaveDialog.Position = UDim2.new(0.5, -125, 0.5, -50)
@@ -1125,7 +1122,7 @@ local function CreateScriptEditor(parent)
         SaveDialog.ZIndex = 100
         SaveDialog.Parent = ScreenGui
         
-        -- Add Corner Radius to Save Dialog
+        -- add corner radius to Save Dialog
         local SaveDialogCorner = Instance.new("UICorner")
         SaveDialogCorner.CornerRadius = UDim.new(0, 6)
         SaveDialogCorner.Parent = SaveDialog
@@ -1153,7 +1150,7 @@ local function CreateScriptEditor(parent)
         SaveNameInput.ZIndex = 101
         SaveNameInput.Parent = SaveDialog
         
-        -- Add Corner Radius to Save Name Input
+        -- add corner radius to save name input
         local SaveNameInputCorner = Instance.new("UICorner")
         SaveNameInputCorner.CornerRadius = UDim.new(0, 4)
         SaveNameInputCorner.Parent = SaveNameInput
@@ -1169,7 +1166,7 @@ local function CreateScriptEditor(parent)
         SaveConfirmButton.ZIndex = 101
         SaveConfirmButton.Parent = SaveDialog
         
-        -- Add Corner Radius to Save Confirm Button
+        -- add corner radius to save confirm button
         local SaveConfirmButtonCorner = Instance.new("UICorner")
         SaveConfirmButtonCorner.CornerRadius = UDim.new(0, 4)
         SaveConfirmButtonCorner.Parent = SaveConfirmButton
@@ -1185,7 +1182,7 @@ local function CreateScriptEditor(parent)
         CancelButton.ZIndex = 101
         CancelButton.Parent = SaveDialog
         
-        -- Add Corner Radius to Cancel Button
+        -- add corner radius to cancel button
         local CancelButtonCorner = Instance.new("UICorner")
         CancelButtonCorner.CornerRadius = UDim.new(0, 4)
         CancelButtonCorner.Parent = CancelButton
@@ -1196,7 +1193,7 @@ local function CreateScriptEditor(parent)
                 SavedScripts[scriptName] = EditorTextBox.Text
                 SaveDialog:Destroy()
                 
-                -- Update saved scripts list if it exists
+                -- update saved scripts list if it exists
                 if parent:FindFirstChild("SavedScriptsContent") then
                     RefreshSavedScripts(parent.SavedScriptsContent)
                 end
@@ -1208,16 +1205,16 @@ local function CreateScriptEditor(parent)
         end)
     end)
     
-    -- Function to refresh saved scripts list
+    -- function to refresh saved scripts list
     function RefreshSavedScripts(container)
-        -- Clear existing items
+        -- clear existing items
         for _, child in pairs(container:GetChildren()) do
             if child:IsA("Frame") then
                 child:Destroy()
             end
         end
         
-        -- Add saved scripts
+        -- add saved scripts
         local index = 0
         for name, script in pairs(SavedScripts) do
             local ScriptItem = Instance.new("Frame")
@@ -1226,7 +1223,7 @@ local function CreateScriptEditor(parent)
             ScriptItem.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
             ScriptItem.Parent = container
             
-            -- Add Corner Radius to Script Item
+            -- add corner radius to script item
             local ScriptItemCorner = Instance.new("UICorner")
             ScriptItemCorner.CornerRadius = UDim.new(0, 4)
             ScriptItemCorner.Parent = ScriptItem
@@ -1251,7 +1248,7 @@ local function CreateScriptEditor(parent)
             LoadButton.Font = Config.UI.Font
             LoadButton.Parent = ScriptItem
             
-            -- Add Corner Radius to Load Button
+            -- add corner radius to road button
             local LoadButtonCorner = Instance.new("UICorner")
             LoadButtonCorner.CornerRadius = UDim.new(0, 4)
             LoadButtonCorner.Parent = LoadButton
@@ -1266,7 +1263,7 @@ local function CreateScriptEditor(parent)
             DeleteButton.Font = Config.UI.Font
             DeleteButton.Parent = ScriptItem
             
-            -- Add Corner Radius to Delete Button
+            -- add corner radius to delete button
             local DeleteButtonCorner = Instance.new("UICorner")
             DeleteButtonCorner.CornerRadius = UDim.new(0, 4)
             DeleteButtonCorner.Parent = DeleteButton
@@ -1297,14 +1294,14 @@ local function CreateScriptEditor(parent)
     }
 end
 
--- Utility Functions
+-- utility functions
 local function GetClosestPlayer()
     local closestPlayer = nil
     local shortestDistance = math.huge
     
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            -- Team check
+            -- tteam check
             if not Config.Aimbot.TeamCheck or player.Team ~= LocalPlayer.Team then
                 local character = player.Character
                 if character and character:FindFirstChild("Humanoid") and character.Humanoid.Health > 0 then
@@ -1327,7 +1324,7 @@ local function GetClosestPlayer()
     return closestPlayer
 end
 
--- Drawing utilities
+-- drawing utilities
 local DrawingObjects = {}
 
 local function CreateDrawing(type, properties)
@@ -1346,7 +1343,7 @@ local function ClearDrawings()
     DrawingObjects = {}
 end
 
--- Create FOV Circle
+-- create FOV circle
 local FOVCircle = CreateDrawing("Circle", {
     Visible = Config.Aimbot.ShowFOV,
     Color = Config.Aimbot.FOVColor,
@@ -1357,14 +1354,14 @@ local FOVCircle = CreateDrawing("Circle", {
     Filled = false
 })
 
--- Create Tabs
+-- create tabs
 local HomeTab = CreateTab("Home")
 local ScriptsTab = CreateTab("Scripts")
 local AimbotTab = CreateTab("Aimbot")
 local ESPTab = CreateTab("ESP")
 local SettingsTab = CreateTab("Settings")
 
--- Home Tab Content
+-- home tab content
 CreateLabel(HomeTab, "Welcome to Sleek Executor")
 CreateLabel(HomeTab, "Version 1.0")
 
@@ -1377,10 +1374,10 @@ CreateButton(HomeTab, "Check for Updates", function()
     StatusLabel.Text = "Status: Up to date!"
 end)
 
--- Scripts Tab Content
+-- scripts tab content
 local ScriptEditor = CreateScriptEditor(ScriptsTab)
 
--- Create Saved Scripts Section
+-- create saved scripts section
 local SavedScriptsLabel = CreateLabel(ScriptsTab, "Saved Scripts")
 SavedScriptsLabel.Position = UDim2.new(0, 0, 0, ScriptsTab.CanvasSize.Y.Offset + 10)
 
@@ -1391,7 +1388,7 @@ SavedScriptsContent.Position = UDim2.new(0, 0, 0, ScriptsTab.CanvasSize.Y.Offset
 SavedScriptsContent.BackgroundTransparency = 1
 SavedScriptsContent.Parent = ScriptsTab
 
--- Aimbot Tab Content
+-- aimbot tab content
 CreateLabel(AimbotTab, "Aimbot Settings")
 
 local AimbotToggle = CreateToggle(AimbotTab, "Enable Aimbot", Config.Aimbot.Enabled, function(value)
@@ -1774,26 +1771,22 @@ end)
 
 -- Save settings when the UI is closed
 ScreenGui.Destroying:Connect(function()
-    -- Here you would implement saving settings to a file
-    -- For example using writefile() if your executor supports it
-    -- writefile("executor_settings.json", game:GetService("HttpService"):JSONEncode(Config))
+        
+    writefile("executor_settings.json", game:GetService("HttpService"):JSONEncode(Config))
 end)
 
--- Load settings when the UI is created
--- This would be implemented here if your executor supports reading files
--- For example:
--- local success, result = pcall(function()
---     return readfile("executor_settings.json")
--- end)
--- if success then
---     local loadedConfig = game:GetService("HttpService"):JSONDecode(result)
---     -- Merge loadedConfig with Config
--- end
 
--- Show the UI
+local success, result = pcall(function()
+     return readfile("executor_settings.json")
+ end)
+if success then
+     local loadedConfig = game:GetService("HttpService"):JSONDecode(result)
+end
+
+-- show the UI
 MainFrame.Visible = true
 
--- Add a welcome notification
+-- add a welcome notification
 local NotificationFrame = Instance.new("Frame")
 NotificationFrame.Size = UDim2.new(0, 250, 0, 80)
 NotificationFrame.Position = UDim2.new(1, -260, 0, 10)
@@ -1801,7 +1794,7 @@ NotificationFrame.BackgroundColor3 = Config.UI.MainColor
 NotificationFrame.BackgroundTransparency = 0.1
 NotificationFrame.Parent = ScreenGui
 
--- Add Corner Radius to Notification Frame
+-- add corner radius to notification frame
 local NotificationFrameCorner = Instance.new("UICorner")
 NotificationFrameCorner.CornerRadius = UDim.new(0, 6)
 NotificationFrameCorner.Parent = NotificationFrame
@@ -1825,10 +1818,10 @@ NotificationText.TextSize = 14
 NotificationText.Font = Config.UI.Font
 NotificationText.Parent = NotificationFrame
 
--- Animate notification
+-- animate notification
 NotificationFrame:TweenPosition(UDim2.new(1, -260, 0, 10), Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.5, true)
 
--- Remove notification after 5 seconds
+-- remove notification after 5 seconds
 spawn(function()
     wait(5)
     NotificationFrame:TweenPosition(UDim2.new(1, 10, 0, 10), Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.5, true)
@@ -1836,14 +1829,14 @@ spawn(function()
     NotificationFrame:Destroy()
 end)
 
--- Toggle UI with RightShift
+-- toggle UI with rightshift
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
         MainFrame.Visible = not MainFrame.Visible
     end
 end)
 
--- Return the main UI object for external access
+-- return the main UI object for external access
 return {
     ScreenGui = ScreenGui,
     Config = Config,
