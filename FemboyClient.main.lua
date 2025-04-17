@@ -1422,7 +1422,7 @@ local FOVColorPicker = CreateColorPicker(AimbotTab, "FOV Circle Color", Config.A
     FOVCircle.Color = color
 end)
 
--- ESP Tab Content
+-- ESP tab content
 CreateLabel(ESPTab, "ESP Settings")
 
 local ESPToggle = CreateToggle(ESPTab, "Enable ESP", Config.ESP.Enabled, function(value)
@@ -1453,7 +1453,7 @@ local ESPColorPicker = CreateColorPicker(ESPTab, "ESP Color", Config.ESP.BoxColo
     Config.ESP.BoxColor = color
 end)
 
--- Settings Tab Content
+-- settings tab content
 CreateLabel(SettingsTab, "UI Settings")
 
 local MainColorPicker = CreateColorPicker(SettingsTab, "Main Color", Config.UI.MainColor, function(color)
@@ -1466,7 +1466,7 @@ local AccentColorPicker = CreateColorPicker(SettingsTab, "Accent Color", Config.
     TitleBar.BackgroundColor3 = color
     TitleFix.BackgroundColor3 = color
     
-    -- Update all accent-colored elements
+    -- update all accent-colored elements
     for _, child in pairs(MainFrame:GetDescendants()) do
         if child:IsA("TextButton") and child.BackgroundColor3 == Config.UI.AccentColor then
             child.BackgroundColor3 = color
@@ -1477,7 +1477,7 @@ end)
 local TextColorPicker = CreateColorPicker(SettingsTab, "Text Color", Config.UI.TextColor, function(color)
     Config.UI.TextColor = color
     
-    -- Update all text elements
+    -- update all text elements
     for _, child in pairs(MainFrame:GetDescendants()) do
         if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
             if child.TextColor3 == Config.UI.TextColor then
@@ -1499,7 +1499,7 @@ local FontDropdown = CreateDropdown(SettingsTab, "Font", {"GothamSemibold", "Sou
     
     Config.UI.Font = fontMap[value]
     
-    -- Update all text elements
+    -- update all text elements
     for _, child in pairs(MainFrame:GetDescendants()) do
         if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
             child.Font = Config.UI.Font
@@ -1515,7 +1515,7 @@ local TransparencySlider = CreateSlider(SettingsTab, "UI Transparency", 0, 0.9, 
 end)
 
 local ResetButton = CreateButton(SettingsTab, "Reset Settings", function()
-    -- Reset to default settings
+    -- reset to default settings
     Config = {
         UI = {
             MainColor = Color3.fromRGB(45, 45, 45),
@@ -1551,12 +1551,12 @@ local ResetButton = CreateButton(SettingsTab, "Reset Settings", function()
         }
     }
     
-    -- Update UI to reflect reset settings
+    -- update UI to reflect reset settings
     MainFrame.BackgroundColor3 = Config.UI.MainColor
     TitleBar.BackgroundColor3 = Config.UI.AccentColor
     TitleFix.BackgroundColor3 = Config.UI.AccentColor
     
-    -- Update all UI elements
+    -- update all UI elements
     AimbotToggle.SetValue(Config.Aimbot.Enabled)
     TeamCheckToggle.SetValue(Config.Aimbot.TeamCheck)
     ShowFOVToggle.SetValue(Config.Aimbot.ShowFOV)
@@ -1579,13 +1579,13 @@ local ResetButton = CreateButton(SettingsTab, "Reset Settings", function()
     TransparencySlider.SetValue(Config.UI.Transparency)
 end)
 
--- Close button functionality
+-- close button functionality
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
     ClearDrawings()
 end)
 
--- Show Home tab by default
+-- show home tab by default
 for _, child in pairs(TabContainer:GetChildren()) do
     if child:IsA("TextButton") and child.Name == "HomeTab" then
         child.BackgroundColor3 = Config.UI.AccentColor
@@ -1600,12 +1600,12 @@ for _, child in pairs(ContentFrame:GetChildren()) do
     end
 end
 
--- Aimbot functionality
+-- aimbot functionality
 RunService.RenderStepped:Connect(function()
-    -- Update FOV Circle position
+    -- update FOV Circle position
     FOVCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
     
-    -- Aimbot logic
+    -- aimbot logic
     if Config.Aimbot.Enabled and UserInputService:IsKeyDown(Enum.KeyCode.E) then -- E key for aiming
         local target = GetClosestPlayer()
         if target then
@@ -1615,12 +1615,12 @@ RunService.RenderStepped:Connect(function()
                 if targetPart then
                     local pos, onScreen = Camera:WorldToViewportPoint(targetPart.Position)
                     if onScreen then
-                        -- Calculate aim position with sensitivity
+                        -- calculate aim position with sensitivity
                         local aimPos = Vector2.new(pos.X, pos.Y)
                         local mousePos = Vector2.new(Mouse.X, Mouse.Y)
                         local newPos = mousePos:Lerp(aimPos, Config.Aimbot.Sensitivity)
                         
-                        -- Move mouse to target
+                        -- move mouse to target
                         mousemoveabs(newPos.X, newPos.Y)
                     end
                 end
@@ -1628,11 +1628,11 @@ RunService.RenderStepped:Connect(function()
         end
     end
     
-    -- ESP Logic
+    -- ESP logic
     if Config.ESP.Enabled then
-        ClearDrawings() -- Clear previous drawings
+        ClearDrawings() -- clear previous drawings
         
-        -- Recreate FOV Circle since it was cleared
+        -- recreate FOV Circle since it was cleared
         FOVCircle = CreateDrawing("Circle", {
             Visible = Config.Aimbot.ShowFOV,
             Color = Config.Aimbot.FOVColor,
@@ -1646,7 +1646,7 @@ RunService.RenderStepped:Connect(function()
         
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
-                -- Team check
+                -- team check
                 if not Config.ESP.TeamCheck or player.Team ~= LocalPlayer.Team then
                     local character = player.Character
                     if character and character:FindFirstChild("Humanoid") and character.Humanoid.Health > 0 then
@@ -1657,7 +1657,7 @@ RunService.RenderStepped:Connect(function()
                             local rootPos, rootOnScreen = Camera:WorldToViewportPoint(rootPart.Position)
                             
                             if rootOnScreen then
-                                -- Calculate character size for ESP box
+                                -- calculate character size for ESP box
                                 local hrp = rootPart.Position
                                 local headPos = head.Position + Vector3.new(0, 0.5, 0)
                                 local legPos = rootPart.Position - Vector3.new(0, 3, 0)
@@ -1668,7 +1668,7 @@ RunService.RenderStepped:Connect(function()
                                 local boxHeight = math.abs(headScreenPos.Y - legScreenPos.Y)
                                 local boxWidth = boxHeight * 0.6
                                 
-                                -- Box ESP
+                                -- box ESP
                                 if Config.ESP.BoxesEnabled then
                                     local box = CreateDrawing("Square", {
                                         Visible = true,
@@ -1681,7 +1681,7 @@ RunService.RenderStepped:Connect(function()
                                     })
                                 end
                                 
-                                -- Name ESP
+                                -- name ESP
                                 if Config.ESP.NamesEnabled then
                                     local nameText = CreateDrawing("Text", {
                                         Visible = true,
@@ -1696,7 +1696,7 @@ RunService.RenderStepped:Connect(function()
                                     })
                                 end
                                 
-                                -- Distance ESP
+                                -- distance ESP
                                 if Config.ESP.DistanceEnabled then
                                     local distance = math.floor((rootPart.Position - Camera.CFrame.Position).Magnitude)
                                     local distanceText = CreateDrawing("Text", {
@@ -1712,7 +1712,7 @@ RunService.RenderStepped:Connect(function()
                                     })
                                 end
                                 
-                                -- Tracers
+                                -- tracers
                                 if Config.ESP.TracersEnabled then
                                     local tracer = CreateDrawing("Line", {
                                         Visible = true,
@@ -1732,7 +1732,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Make UI draggable
+-- make UI draggable
 local dragging
 local dragInput
 local dragStart
@@ -1769,7 +1769,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- Save settings when the UI is closed
+-- save settings when the UI is closed
 ScreenGui.Destroying:Connect(function()
         
     writefile("executor_settings.json", game:GetService("HttpService"):JSONEncode(Config))
