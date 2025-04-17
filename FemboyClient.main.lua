@@ -3,9 +3,10 @@ local LocalPlayer = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
 local Camera = workspace.CurrentCamera
 
--- ==== COLOR PALETTE ====
+-- ==== THEME COLORS ====
 local GlassColor = Color3.fromRGB(232, 230, 255)
 local GlassDecor = Color3.fromRGB(255, 239, 255)
 local AccentPink = Color3.fromRGB(244, 189, 255)
@@ -13,7 +14,6 @@ local AccentBlue = Color3.fromRGB(190, 225, 255)
 local AccentWhite = Color3.fromRGB(235, 235, 240)
 local Monochrome = Color3.fromRGB(215, 215, 215)
 local Neon = Color3.fromRGB(255, 174, 255)
-local FemboyFaint = Color3.fromRGB(255, 210, 250)
 local GlassTransparency = 0.22
 
 -- ==== UI CONSTRUCTION ====
@@ -26,8 +26,8 @@ gui.Parent = LocalPlayer.PlayerGui
 
 local main = Instance.new("Frame")
 main.Name = "Main"
-main.Size = UDim2.new(0, 520, 0, 650)
-main.Position = UDim2.new(0.5, -260, 0.5, -325)
+main.Size = UDim2.new(0, 560, 0, 670)
+main.Position = UDim2.new(0.5, -280, 0.5, -335)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = GlassColor
 main.BackgroundTransparency = GlassTransparency
@@ -73,7 +73,7 @@ title.BackgroundTransparency = 1
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
 
--- Tab bar
+-- tab bar
 local tabBar = Instance.new("Frame")
 tabBar.Position = UDim2.new(0, 0, 0, 62)
 tabBar.Size = UDim2.new(1, 0, 0, 50)
@@ -81,7 +81,7 @@ tabBar.BackgroundTransparency = 1
 tabBar.Parent = main
 
 local tabs = {
-    "Aimbot", "ESP", "Triggerbot", "Player", "Visuals", "Settings"
+    "Aimbot", "ESP", "Visuals", "Movement", "Combat", "Camera", "Fun", "Settings"
 }
 local tabBtns, tabContents = {}, {}
 
@@ -93,7 +93,7 @@ for i, tabName in ipairs(tabs) do
     btn.TextColor3 = (i%2==0) and AccentPink or AccentBlue
     btn.TextSize = 24
     btn.Size = UDim2.new(0, 106, 0, 40)
-    btn.Position = UDim2.new(0, (i-1)*90+16, 0.5, -20)
+    btn.Position = UDim2.new(0, (i-1)*70+16, 0.5, -20)
     btn.BackgroundColor3 = Monochrome
     btn.BackgroundTransparency = 0.82
     btn.AutoButtonColor = true
@@ -112,7 +112,7 @@ contentFrame.BackgroundTransparency = 1
 contentFrame.ClipsDescendants = true
 contentFrame.Parent = main
 
--- ==== SMOOTH DRAG & INERTIA (nerd stuff)  ====
+-- ==== SMOOTH DRAG & INERTIA ====
 local dragging, dragInput, dragStart, startPos
 local velocity = Vector2.new(0,0)
 local lastUpdate = tick()
@@ -152,11 +152,11 @@ RunService.RenderStepped:Connect(function(dt)
 end)
 
 -- ==== ANIMATED OPENING ====
-main.Position = UDim2.new(0.5, -260, 1, 0)
-main.Size = UDim2.new(0, 520, 0, 0)
+main.Position = UDim2.new(0.5, -280, 1, 0)
+main.Size = UDim2.new(0, 560, 0, 0)
 TweenService:Create(main, TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-    Position = UDim2.new(0.5, -260, 0.5, -325),
-    Size = UDim2.new(0, 520, 0, 650),
+    Position = UDim2.new(0.5, -280, 0.5, -335),
+    Size = UDim2.new(0, 560, 0, 670),
 }):Play()
 
 -- ==== TAB SYSTEM HANDLING ====
@@ -184,7 +184,23 @@ for name, btn in pairs(tabBtns) do
     end)
 end
 
--- ==== ADVANCED THINGS ====
+
+-- utility
+local function makeToggle(parent, label, pos, default)
+    local t = Instance.new("TextButton")
+    t.Text = label .. ": " .. (default and "ON" or "OFF")
+    t.Font = Enum.Font.GothamBold
+    t.TextColor3 = default and Color3.fromRGB(127,255,127) or AccentBlue
+    t.TextSize = 24
+    t.BackgroundColor3 = AccentWhite
+    t.BackgroundTransparency = 0.5
+    t.Size = UDim2.new(0, 200, 0, 46)
+    t.Position = pos
+    t.Parent = parent
+    local c = Instance.new("UICorner") c.Parent = t
+    return t
+end
+
 -- ========== AIMBOT ==========
 local aimbotTab = Instance.new("Frame")
 aimbotTab.Size = UDim2.new(1, -36, 1, -36)
@@ -194,30 +210,19 @@ aimbotTab.Visible = false
 aimbotTab.Parent = contentFrame
 tabContents["Aimbot"] = aimbotTab
 
-local aimbotEnabled, aiming, aimKey, aimFOV, aimTeamIgnore, aimSmooth = false, false, Enum.KeyCode.LeftAlt, 90, true, 0.28
-local aimbotToggle = Instance.new("TextButton")
-aimbotToggle.Text = "Aimbot: OFF"
-aimbotToggle.Font = Enum.Font.GothamBold
-aimbotToggle.TextColor3 = AccentBlue
-aimbotToggle.TextSize = 24
-aimbotToggle.BackgroundColor3 = AccentWhite
-aimbotToggle.BackgroundTransparency = 0.5
-aimbotToggle.Size = UDim2.new(0, 220, 0, 46)
-aimbotToggle.Position = UDim2.new(0, 0, 0, 0)
-aimbotToggle.Parent = aimbotTab
-local abCorner = Instance.new("UICorner") abCorner.Parent = aimbotToggle
+local aimbotEnabled, aiming, aimKey, aimFOV, aimSmooth = false, false, Enum.KeyCode.LeftAlt, 90, 0.28
+local aimbotToggle = makeToggle(aimbotTab, "Aimbot", UDim2.new(0,0,0,0), false)
 
-local aimbotInfo = Instance.new("TextLabel")
-aimbotInfo.Text = "Hold ["..aimKey.Name.."] to aim at closest enemy\nFOV: "..aimFOV.." | Team Ignore: "..tostring(aimTeamIgnore)
-aimbotInfo.Font = Enum.Font.Gotham
-aimbotInfo.TextColor3 = AccentPink
-aimbotInfo.TextSize = 18
-aimbotInfo.Position = UDim2.new(0,0,0,52)
-aimbotInfo.Size = UDim2.new(1,0,0,44)
-aimbotInfo.BackgroundTransparency = 1
-aimbotInfo.TextXAlignment = Enum.TextXAlignment.Left
-aimbotInfo.TextYAlignment = Enum.TextYAlignment.Top
-aimbotInfo.Parent = aimbotTab
+local aimInfo = Instance.new("TextLabel")
+aimInfo.Text = "Hold ["..aimKey.Name.."] to aim at closest player\nFOV: "..aimFOV
+aimInfo.Font = Enum.Font.Gotham
+aimInfo.TextColor3 = AccentPink
+aimInfo.TextSize = 18
+aimInfo.Position = UDim2.new(0,0,0,52)
+aimInfo.Size = UDim2.new(1,0,0,44)
+aimInfo.BackgroundTransparency = 1
+aimInfo.TextXAlignment = Enum.TextXAlignment.Left
+aimInfo.Parent = aimbotTab
 
 aimbotToggle.MouseButton1Click:Connect(function()
     aimbotEnabled = not aimbotEnabled
@@ -242,14 +247,12 @@ local function getClosestPlayer()
     local closest, closestDist = nil, math.huge
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
-            if not aimTeamIgnore or player.Team ~= LocalPlayer.Team then
-                local pos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
-                if onScreen then
-                    local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
-                    if dist < aimFOV and dist < closestDist then
-                        closest = player
-                        closestDist = dist
-                    end
+            local pos, onScreen = Camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
+            if onScreen then
+                local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+                if dist < aimFOV and dist < closestDist then
+                    closest = player
+                    closestDist = dist
                 end
             end
         end
@@ -275,184 +278,177 @@ espTab.Visible = false
 espTab.Parent = contentFrame
 tabContents["ESP"] = espTab
 
-local espEnabled, espNames, espTracers = false, true, true
-local espToggle = Instance.new("TextButton")
-espToggle.Text = "ESP: OFF"
-espToggle.Font = Enum.Font.GothamBold
-espToggle.TextColor3 = AccentPink
-espToggle.TextSize = 24
-espToggle.BackgroundColor3 = AccentWhite
-espToggle.BackgroundTransparency = 0.5
-espToggle.Size = UDim2.new(0, 180, 0, 46)
-espToggle.Position = UDim2.new(0, 0, 0, 0)
-espToggle.Parent = espTab
-local espCorner = Instance.new("UICorner") espCorner.Parent = espToggle
+local espEnabled = false
+local espToggle = makeToggle(espTab, "Player ESP", UDim2.new(0,0,0,0), false)
+local nameESPEnabled = true
+local nameESPToggle = makeToggle(espTab, "Name ESP", UDim2.new(0,220,0,0), true)
+local distESPEnabled = true
+local distESPToggle = makeToggle(espTab, "Dist ESP", UDim2.new(0,440,0,0), true)
 
 espToggle.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
-    espToggle.Text = "ESP: "..(espEnabled and "ON" or "OFF")
-    espToggle.TextColor3 = espEnabled and Color3.fromRGB(127,255,127) or AccentPink
+    espToggle.Text = "Player ESP: "..(espEnabled and "ON" or "OFF")
+    espToggle.TextColor3 = espEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+end)
+nameESPToggle.MouseButton1Click:Connect(function()
+    nameESPEnabled = not nameESPEnabled
+    nameESPToggle.Text = "Name ESP: "..(nameESPEnabled and "ON" or "OFF")
+    nameESPToggle.TextColor3 = nameESPEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+end)
+distESPToggle.MouseButton1Click:Connect(function()
+    distESPEnabled = not distESPEnabled
+    distESPToggle.Text = "Dist ESP: "..(distESPEnabled and "ON" or "OFF")
+    distESPToggle.TextColor3 = distESPEnabled and Color3.fromRGB(127,255,127) or AccentBlue
 end)
 
--- ========== TRIGGERBOT ==========
-local triggerTab = Instance.new("Frame")
-triggerTab.Size = UDim2.new(1, -36, 1, -36)
-triggerTab.Position = UDim2.new(0, 18, 0, 18)
-triggerTab.BackgroundTransparency = 1
-triggerTab.Visible = false
-triggerTab.Parent = contentFrame
-tabContents["Triggerbot"] = triggerTab
+-- ESP Drawing
+local espBoxes = {}
+local function clearESP()
+    for _, adorn in pairs(workspace:GetChildren()) do
+        if adorn.Name == "FemboyESPBox" and adorn:IsA("BoxHandleAdornment") then
+            adorn:Destroy()
+        end
+    end
+    for _, gui in pairs(workspace:GetChildren()) do
+        if gui.Name == "FemboyESPBill" and gui:IsA("BillboardGui") then
+            gui:Destroy()
+        end
+    end
+end
 
-local triggerEnabled = false
-local triggerToggle = Instance.new("TextButton")
-triggerToggle.Text = "Triggerbot: OFF"
-triggerToggle.Font = Enum.Font.GothamBold
-triggerToggle.TextColor3 = AccentBlue
-triggerToggle.TextSize = 24
-triggerToggle.BackgroundColor3 = AccentWhite
-triggerToggle.BackgroundTransparency = 0.5
-triggerToggle.Size = UDim2.new(0, 220, 0, 46)
-triggerToggle.Position = UDim2.new(0, 0, 0, 0)
-triggerToggle.Parent = triggerTab
-local trigCorner = Instance.new("UICorner") trigCorner.Parent = triggerToggle
-
-triggerToggle.MouseButton1Click:Connect(function()
-    triggerEnabled = not triggerEnabled
-    triggerToggle.Text = "Triggerbot: "..(triggerEnabled and "ON" or "OFF")
-    triggerToggle.TextColor3 = triggerEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+RunService.RenderStepped:Connect(function()
+    if not espEnabled then clearESP() return end
+    clearESP()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+            -- Box ESP
+            local box = Instance.new("BoxHandleAdornment")
+            box.Name = "FemboyESPBox"
+            box.Adornee = player.Character
+            box.Size = Vector3.new(4,6,2)
+            box.Color3 = AccentBlue
+            box.AlwaysOnTop = true
+            box.ZIndex = 10
+            box.Transparency = 0.5
+            box.Parent = workspace
+            table.insert(espBoxes, box)
+            -- name/dist ESP
+            if nameESPEnabled or distESPEnabled then
+                local bill = Instance.new("BillboardGui")
+                bill.Name = "FemboyESPBill"
+                bill.Adornee = player.Character.Head
+                bill.Size = UDim2.new(0,200,0,36)
+                bill.StudsOffset = Vector3.new(0,2.5,0)
+                bill.AlwaysOnTop = true
+                bill.Parent = workspace
+                local label = Instance.new("TextLabel")
+                label.Size = UDim2.new(1,0,1,0)
+                label.BackgroundTransparency = 1
+                label.Font = Enum.Font.GothamBold
+                label.TextColor3 = AccentPink
+                label.TextSize = 16
+                label.Text = (nameESPEnabled and player.Name or "") .. (distESPEnabled and (" ["..math.floor((Camera.CFrame.Position-player.Character.Head.Position).Magnitude).."m]") or "")
+                label.Parent = bill
+            end
+        end
+    end
 end)
 
--- ========== PLAYER ==========
-local playerTab = Instance.new("Frame")
-playerTab.Size = UDim2.new(1, -36, 1, -36)
-playerTab.Position = UDim2.new(0, 18, 0, 18)
-playerTab.BackgroundTransparency = 1
-playerTab.Visible = false
-playerTab.Parent = contentFrame
-tabContents["Player"] = playerTab
+-- ========== VISUALS ==========
+local visualsTab = Instance.new("Frame")
+visualsTab.Size = UDim2.new(1, -36, 1, -36)
+visualsTab.Position = UDim2.new(0, 18, 0, 18)
+visualsTab.BackgroundTransparency = 1
+visualsTab.Visible = false
+visualsTab.Parent = contentFrame
+tabContents["Visuals"] = visualsTab
+
+local fullbrightEnabled = false
+local fullbrightToggle = makeToggle(visualsTab, "Fullbright", UDim2.new(0,0,0,0), false)
+local fogToggle = makeToggle(visualsTab, "No Fog", UDim2.new(0,220,0,0), false)
+local themeLabel = Instance.new("TextLabel")
+themeLabel.Text = "Femboy Hub Glass Theme"
+themeLabel.Font = Enum.Font.GothamBold
+themeLabel.TextColor3 = AccentBlue
+themeLabel.TextSize = 28
+themeLabel.Size = UDim2.new(1, 0, 0, 40)
+themeLabel.Position = UDim2.new(0,0,0,60)
+themeLabel.BackgroundTransparency = 1
+themeLabel.Parent = visualsTab
+
+fullbrightToggle.MouseButton1Click:Connect(function()
+    fullbrightEnabled = not fullbrightEnabled
+    fullbrightToggle.Text = "Fullbright: "..(fullbrightEnabled and "ON" or "OFF")
+    fullbrightToggle.TextColor3 = fullbrightEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+    if fullbrightEnabled then
+        Lighting.Brightness = 6
+        Lighting.Ambient = Color3.new(1,1,1)
+        Lighting.OutdoorAmbient = Color3.new(1,1,1)
+        Lighting.ClockTime = 14
+    else
+        Lighting.Brightness = 2
+        Lighting.Ambient = Color3.fromRGB(128,128,128)
+        Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
+        Lighting.ClockTime = 14
+    end
+end)
+fogToggle.MouseButton1Click:Connect(function()
+    local noFog = not (Lighting.FogEnd > 10000)
+    fogToggle.Text = "No Fog: "..(noFog and "ON" or "OFF")
+    fogToggle.TextColor3 = noFog and Color3.fromRGB(127,255,127) or AccentBlue
+    Lighting.FogEnd = noFog and 1e9 or 1000
+end)
+
+-- ========== MOVEMENT ==========
+local movementTab = Instance.new("Frame")
+movementTab.Size = UDim2.new(1, -36, 1, -36)
+movementTab.Position = UDim2.new(0, 18, 0, 18)
+movementTab.BackgroundTransparency = 1
+movementTab.Visible = false
+movementTab.Parent = contentFrame
+tabContents["Movement"] = movementTab
 
 local flyEnabled, noclipEnabled, speedEnabled = false, false, false
-local speedValue, fovValue = 60, 70
+local speedValue, jumpValue = 60, 100
+local infJumpEnabled = false
 
--- fly
-local flyToggle = Instance.new("TextButton")
-flyToggle.Text = "Fly: OFF"
-flyToggle.Font = Enum.Font.GothamBold
-flyToggle.TextColor3 = AccentPink
-flyToggle.TextSize = 22
-flyToggle.BackgroundColor3 = AccentWhite
-flyToggle.BackgroundTransparency = 0.6
-flyToggle.Size = UDim2.new(0, 120, 0, 40)
-flyToggle.Position = UDim2.new(0, 0, 0, 0)
-flyToggle.Parent = playerTab
-local flyCorner = Instance.new("UICorner") flyCorner.Parent = flyToggle
-
--- noclip
-local noclipToggle = Instance.new("TextButton")
-noclipToggle.Text = "Noclip: OFF"
-noclipToggle.Font = Enum.Font.GothamBold
-noclipToggle.TextColor3 = AccentPink
-noclipToggle.TextSize = 22
-noclipToggle.BackgroundColor3 = AccentWhite
-noclipToggle.BackgroundTransparency = 0.6
-noclipToggle.Size = UDim2.new(0, 120, 0, 40)
-noclipToggle.Position = UDim2.new(0, 140, 0, 0)
-noclipToggle.Parent = playerTab
-local noclipCorner = Instance.new("UICorner") noclipCorner.Parent = noclipToggle
-
--- speed
-local speedToggle = Instance.new("TextButton")
-speedToggle.Text = "Speed: OFF"
-speedToggle.Font = Enum.Font.GothamBold
-speedToggle.TextColor3 = AccentBlue
-speedToggle.TextSize = 22
-speedToggle.BackgroundColor3 = AccentWhite
-speedToggle.BackgroundTransparency = 0.6
-speedToggle.Size = UDim2.new(0, 120, 0, 40)
-speedToggle.Position = UDim2.new(0, 280, 0, 0)
-speedToggle.Parent = playerTab
-local speedCorner = Instance.new("UICorner") speedCorner.Parent = speedToggle
-
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Text = "WalkSpeed: "..speedValue
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.TextColor3 = AccentBlue
-speedLabel.TextSize = 18
-speedLabel.Position = UDim2.new(0, 0, 0, 50)
-speedLabel.Size = UDim2.new(0, 200, 0, 36)
-speedLabel.BackgroundTransparency = 1
-speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-speedLabel.Parent = playerTab
-
-local fovLabel = Instance.new("TextLabel")
-fovLabel.Text = "FOV: "..fovValue
-fovLabel.Font = Enum.Font.Gotham
-fovLabel.TextColor3 = AccentPink
-fovLabel.TextSize = 18
-fovLabel.Position = UDim2.new(0, 220, 0, 50)
-fovLabel.Size = UDim2.new(0, 200, 0, 36)
-fovLabel.BackgroundTransparency = 1
-fovLabel.TextXAlignment = Enum.TextXAlignment.Left
-fovLabel.Parent = playerTab
-
--- FOV changer
-local plusFOV = Instance.new("TextButton")
-plusFOV.Text = "+"
-plusFOV.Font = Enum.Font.GothamBold
-plusFOV.TextColor3 = AccentPink
-plusFOV.TextSize = 20
-plusFOV.BackgroundColor3 = AccentWhite
-plusFOV.BackgroundTransparency = 0.7
-plusFOV.Size = UDim2.new(0, 36, 0, 36)
-plusFOV.Position = UDim2.new(0, 420, 0, 50)
-plusFOV.Parent = playerTab
-local plusFOVCorner = Instance.new("UICorner") plusFOVCorner.Parent = plusFOV
-
-local minusFOV = plusFOV:Clone()
-minusFOV.Text = "-"
-minusFOV.Position = UDim2.new(0, 380, 0, 50)
-minusFOV.Parent = playerTab
-
-plusFOV.MouseButton1Click:Connect(function()
-    fovValue = math.clamp(fovValue+5, 30, 120)
-    Camera.FieldOfView = fovValue
-    fovLabel.Text = "FOV: "..fovValue
-end)
-minusFOV.MouseButton1Click:Connect(function()
-    fovValue = math.clamp(fovValue-5, 30, 120)
-    Camera.FieldOfView = fovValue
-    fovLabel.Text = "FOV: "..fovValue
-end)
+local flyToggle = makeToggle(movementTab, "Fly", UDim2.new(0,0,0,0), false)
+local noclipToggle = makeToggle(movementTab, "Noclip", UDim2.new(0,220,0,0), false)
+local speedToggle = makeToggle(movementTab, "Speed", UDim2.new(0,440,0,0), false)
+local infJumpToggle = makeToggle(movementTab, "Inf Jump", UDim2.new(0,0,0,60), false)
 
 flyToggle.MouseButton1Click:Connect(function()
     flyEnabled = not flyEnabled
     flyToggle.Text = "Fly: "..(flyEnabled and "ON" or "OFF")
-    flyToggle.TextColor3 = flyEnabled and Color3.fromRGB(127,255,127) or AccentPink
+    flyToggle.TextColor3 = flyEnabled and Color3.fromRGB(127,255,127) or AccentBlue
 end)
 noclipToggle.MouseButton1Click:Connect(function()
     noclipEnabled = not noclipEnabled
     noclipToggle.Text = "Noclip: "..(noclipEnabled and "ON" or "OFF")
-    noclipToggle.TextColor3 = noclipEnabled and Color3.fromRGB(127,255,127) or AccentPink
+    noclipToggle.TextColor3 = noclipEnabled and Color3.fromRGB(127,255,127) or AccentBlue
 end)
 speedToggle.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     speedToggle.Text = "Speed: "..(speedEnabled and "ON" or "OFF")
     speedToggle.TextColor3 = speedEnabled and Color3.fromRGB(127,255,127) or AccentBlue
-    LocalPlayer.Character.Humanoid.WalkSpeed = speedEnabled and speedValue or 16
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = speedEnabled and speedValue or 16
+    end
 end)
-speedLabel.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        speedValue = math.clamp(speedValue + 10, 16, 200)
-        speedLabel.Text = "WalkSpeed: "..speedValue
-        if speedEnabled then LocalPlayer.Character.Humanoid.WalkSpeed = speedValue end
-    elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-        speedValue = math.clamp(speedValue - 10, 16, 200)
-        speedLabel.Text = "WalkSpeed: "..speedValue
-        if speedEnabled then LocalPlayer.Character.Humanoid.WalkSpeed = speedValue end
+infJumpToggle.MouseButton1Click:Connect(function()
+    infJumpEnabled = not infJumpEnabled
+    infJumpToggle.Text = "Inf Jump: "..(infJumpEnabled and "ON" or "OFF")
+    infJumpToggle.TextColor3 = infJumpEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+end)
+
+-- infinite jump logic
+UserInputService.JumpRequest:Connect(function()
+    if infJumpEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
 
--- fly/noclip logic
+-- fly/noclip/speed logic
 local flyVelocity = Vector3.new()
 RunService.RenderStepped:Connect(function()
     -- fly
@@ -475,7 +471,7 @@ RunService.RenderStepped:Connect(function()
     elseif LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.PlatformStand = false
     end
-    -- noclip
+    -- oclip
     if noclipEnabled and LocalPlayer.Character then
         for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
             if v:IsA("BasePart") and v.CanCollide then
@@ -483,77 +479,27 @@ RunService.RenderStepped:Connect(function()
             end
         end
     end
+    -- speed
+    if speedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = speedValue
+    end
 end)
 
--- ========== VISUALS (UI theme etc) ==========
-local visualsTab = Instance.new("Frame")
-visualsTab.Size = UDim2.new(1, -36, 1, -36)
-visualsTab.Position = UDim2.new(0, 18, 0, 18)
-visualsTab.BackgroundTransparency = 1
-visualsTab.Visible = false
-visualsTab.Parent = contentFrame
-tabContents["Visuals"] = visualsTab
+-- ========== COMBAT ==========
+local combatTab = Instance.new("Frame")
+combatTab.Size = UDim2.new(1, -36, 1, -36)
+combatTab.Position = UDim2.new(0, 18, 0, 18)
+combatTab.BackgroundTransparency = 1
+combatTab.Visible = false
+combatTab.Parent = contentFrame
+tabContents["Combat"] = combatTab
 
-local themeLabel = Instance.new("TextLabel")
-themeLabel.Text = "Glass/Femboy Theme Applied"
-themeLabel.Font = Enum.Font.GothamBold
-themeLabel.TextColor3 = AccentBlue
-themeLabel.TextSize = 28
-themeLabel.Size = UDim2.new(1, 0, 0, 40)
-themeLabel.BackgroundTransparency = 1
-themeLabel.Parent = visualsTab
-
--- ========== SETTINGS ==========
-local settingsTab = Instance.new("Frame")
-settingsTab.Size = UDim2.new(1, -36, 1, -36)
-settingsTab.Position = UDim2.new(0, 18, 0, 18)
-settingsTab.BackgroundTransparency = 1
-settingsTab.Visible = false
-settingsTab.Parent = contentFrame
-tabContents["Settings"] = settingsTab
-
-local settingsLabel = Instance.new("TextLabel")
-settingsLabel.Text = "Femboy Hub\nby Copilot\n"
-settingsLabel.Font = Enum.Font.Gotham
-settingsLabel.TextColor3 = AccentBlue
-settingsLabel.TextSize = 20
-settingsLabel.Size = UDim2.new(1, 0, 0, 60)
-settingsLabel.BackgroundTransparency = 1
-settingsLabel.Parent = settingsTab
-
--- ==== OPEN DEFAULT TAB ====
-showTab("Aimbot")
-tabBtns["Aimbot"].BackgroundTransparency = 0.38
-
--- ==== BASIC FUNCTIONALITY FOR ESP/TRIGGERBOT ====
--- ESP logic
-local espBoxes = {}
-local function clearESP()
-    for _, adorn in pairs(workspace:GetChildren()) do
-        if adorn.Name == "FemboyESPBox" and adorn:IsA("BoxHandleAdornment") then
-            adorn:Destroy()
-        end
-    end
-    espBoxes = {}
-end
-
-RunService.RenderStepped:Connect(function()
-    if not espEnabled then clearESP() return end
-    clearESP()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
-            local box = Instance.new("BoxHandleAdornment")
-            box.Name = "FemboyESPBox"
-            box.Adornee = player.Character
-            box.Size = Vector3.new(4,6,2)
-            box.Color3 = AccentBlue
-            box.AlwaysOnTop = true
-            box.ZIndex = 10
-            box.Transparency = 0.5
-            box.Parent = workspace
-            table.insert(espBoxes, box)
-        end
-    end
+local triggerEnabled = false
+local triggerToggle = makeToggle(combatTab, "Triggerbot", UDim2.new(0,0,0,0), false)
+triggerToggle.MouseButton1Click:Connect(function()
+    triggerEnabled = not triggerEnabled
+    triggerToggle.Text = "Triggerbot: "..(triggerEnabled and "ON" or "OFF")
+    triggerToggle.TextColor3 = triggerEnabled and Color3.fromRGB(127,255,127) or AccentBlue
 end)
 
 -- triggerbot logic
@@ -571,3 +517,146 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+
+-- ========== CAMERA ==========
+local cameraTab = Instance.new("Frame")
+cameraTab.Size = UDim2.new(1, -36, 1, -36)
+cameraTab.Position = UDim2.new(0, 18, 0, 18)
+cameraTab.BackgroundTransparency = 1
+cameraTab.Visible = false
+cameraTab.Parent = contentFrame
+tabContents["Camera"] = cameraTab
+
+local fovValue = 70
+local fovLabel = Instance.new("TextLabel")
+fovLabel.Text = "FOV: "..fovValue
+fovLabel.Font = Enum.Font.Gotham
+fovLabel.TextColor3 = AccentPink
+fovLabel.TextSize = 18
+fovLabel.Position = UDim2.new(0, 0, 0, 0)
+fovLabel.Size = UDim2.new(0, 200, 0, 36)
+fovLabel.BackgroundTransparency = 1
+fovLabel.TextXAlignment = Enum.TextXAlignment.Left
+fovLabel.Parent = cameraTab
+
+local plusFOV = Instance.new("TextButton")
+plusFOV.Text = "+"
+plusFOV.Font = Enum.Font.GothamBold
+plusFOV.TextColor3 = AccentPink
+plusFOV.TextSize = 20
+plusFOV.BackgroundColor3 = AccentWhite
+plusFOV.BackgroundTransparency = 0.7
+plusFOV.Size = UDim2.new(0, 36, 0, 36)
+plusFOV.Position = UDim2.new(0, 220, 0, 0)
+plusFOV.Parent = cameraTab
+local plusFOVCorner = Instance.new("UICorner") plusFOVCorner.Parent = plusFOV
+
+local minusFOV = plusFOV:Clone()
+minusFOV.Text = "-"
+minusFOV.Position = UDim2.new(0, 180, 0, 0)
+minusFOV.Parent = cameraTab
+
+plusFOV.MouseButton1Click:Connect(function()
+    fovValue = math.clamp(fovValue+5, 30, 120)
+    Camera.FieldOfView = fovValue
+    fovLabel.Text = "FOV: "..fovValue
+end)
+minusFOV.MouseButton1Click:Connect(function()
+    fovValue = math.clamp(fovValue-5, 30, 120)
+    Camera.FieldOfView = fovValue
+    fovLabel.Text = "FOV: "..fovValue
+end)
+
+-- freecam (camera detachment)
+local freecamEnabled = false
+local freecamToggle = makeToggle(cameraTab, "Freecam", UDim2.new(0, 0, 0, 50), false)
+freecamToggle.MouseButton1Click:Connect(function()
+    freecamEnabled = not freecamEnabled
+    freecamToggle.Text = "Freecam: "..(freecamEnabled and "ON" or "OFF")
+    freecamToggle.TextColor3 = freecamEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+    if freecamEnabled then
+        Camera.CameraType = Enum.CameraType.Scriptable
+    else
+        Camera.CameraType = Enum.CameraType.Custom
+    end
+end)
+RunService.RenderStepped:Connect(function()
+    if freecamEnabled then
+        local move = Vector3.new(0,0,0)
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then move = move + Camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then move = move - Camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then move = move - Camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then move = move + Camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then move = move - Vector3.new(0,1,0) end
+        Camera.CFrame = Camera.CFrame + move * 2
+    end
+end)
+
+-- ========== FUN ==========
+local funTab = Instance.new("Frame")
+funTab.Size = UDim2.new(1, -36, 1, -36)
+funTab.Position = UDim2.new(0, 18, 0, 18)
+funTab.BackgroundTransparency = 1
+funTab.Visible = false
+funTab.Parent = contentFrame
+tabContents["Fun"] = funTab
+
+local rainbowTrailEnabled = false
+local rainbowTrailToggle = makeToggle(funTab, "Rainbow Trail", UDim2.new(0, 0, 0, 0), false)
+rainbowTrailToggle.MouseButton1Click:Connect(function()
+    rainbowTrailEnabled = not rainbowTrailEnabled
+    rainbowTrailToggle.Text = "Rainbow Trail: "..(rainbowTrailEnabled and "ON" or "OFF")
+    rainbowTrailToggle.TextColor3 = rainbowTrailEnabled and Color3.fromRGB(127,255,127) or AccentBlue
+    if rainbowTrailEnabled then
+        -- add a trail to HumanoidRootPart
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and not LocalPlayer.Character:FindFirstChild("FemboyTrail") then
+            local trail = Instance.new("Trail")
+            trail.Name = "FemboyTrail"
+            trail.Attachment0 = Instance.new("Attachment", LocalPlayer.Character.HumanoidRootPart)
+            trail.Attachment1 = Instance.new("Attachment", LocalPlayer.Character.HumanoidRootPart)
+            trail.Attachment1.Position = Vector3.new(0, -2, 0)
+            trail.Lifetime = 0.7
+            trail.LightEmission = 1
+            trail.Parent = LocalPlayer.Character.HumanoidRootPart
+            coroutine.wrap(function()
+                while rainbowTrailEnabled and trail do
+                    local t = tick()
+                    trail.Color = ColorSequence.new{
+                        ColorSequenceKeypoint.new(0, Color3.fromHSV((t%5)/5,1,1)),
+                        ColorSequenceKeypoint.new(1, Color3.fromHSV(((t+1)%5)/5,1,1))
+                    }
+                    wait(0.1)
+                end
+                if trail then trail:Destroy() end
+            end)()
+        end
+    else
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local t = LocalPlayer.Character.HumanoidRootPart:FindFirstChild("FemboyTrail")
+            if t then t:Destroy() end
+        end
+    end
+end)
+
+-- ========== SETTINGS ==========
+local settingsTab = Instance.new("Frame")
+settingsTab.Size = UDim2.new(1, -36, 1, -36)
+settingsTab.Position = UDim2.new(0, 18, 0, 18)
+settingsTab.BackgroundTransparency = 1
+settingsTab.Visible = false
+settingsTab.Parent = contentFrame
+tabContents["Settings"] = settingsTab
+
+local settingsLabel = Instance.new("TextLabel")
+settingsLabel.Text = "Femboy Hub\nUniversal LocalScript - For Any Game"
+settingsLabel.Font = Enum.Font.Gotham
+settingsLabel.TextColor3 = AccentBlue
+settingsLabel.TextSize = 20
+settingsLabel.Size = UDim2.new(1, 0, 0, 60)
+settingsLabel.BackgroundTransparency = 1
+settingsLabel.Parent = settingsTab
+
+-- ==== OPEN DEFAULT TAB ====
+showTab("Aimbot")
+tabBtns["Aimbot"].BackgroundTransparency = 0.38
