@@ -634,7 +634,7 @@ runservice.RenderStepped:Connect(function()
                 local camPos=camera.CFrame.Position
                 local newcf=CFrame.new(camPos,targetPos)
                 if settings.aimbot_silent then
-                    -- Silent aim: manipulate mouse target (executor-specific, may require metamethod hook; not implemented here)
+                    -- i dont want to add silent aim bro
                 end
                 if settings.aimbot_smoothing and settings.aimbot_smoothing>0 then
                     camera.CFrame=camera.CFrame:Lerp(newcf,math.clamp(settings.aimbot_smoothing/10,0,1))
