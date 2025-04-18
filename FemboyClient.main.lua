@@ -30,6 +30,8 @@ function Util.SerializeKeycode(kc) return typeof(kc)=="EnumItem" and kc.Name or 
 function Util.DeserializeKeycode(s) return (typeof(s)=="EnumItem" and s) or (Enum.KeyCode[s] or Enum.KeyCode.Unknown) end
 Util.JSON = game:GetService("HttpService")
 
+print("UTILITIES LOADED")
+
 ---------------------------------------------------------------------
 -- SETTINGS, PROFILES, PERSISTENCE
 ---------------------------------------------------------------------
@@ -122,6 +124,8 @@ local function importProfile(name, jsonStr)
     return false
 end
 
+print("SETTINGS, PROFILES, PERSISTENCE LOADED")
+
 ---------------------------------------------------------------------
 -- UI FRAMEWORK
 ---------------------------------------------------------------------
@@ -168,6 +172,8 @@ Instance.new("UICorner",contentframe).CornerRadius=UDim.new(0,36)
 for _,tabn in ipairs(tabnames) do
     local f=Instance.new("Frame",contentframe);f.Visible=false;f.Size=UDim2.new(1,-32,1,-32);f.Position=UDim2.new(0,16,0,16);f.BackgroundTransparency=1;tabframes[tabn]=f
 end
+
+print("UI FRAMEWORK LOADED")
 
 ---------------------------------------------------------------------
 -- UI CONTROLS (toggle, slider, colorpicker, keybindpicker, dropdown)
@@ -232,6 +238,8 @@ local function toggle(parent,label,getValue,setValue)
     return btn
 end
 
+print("UI CONTROLS LOADED")
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- TABS: aimbot, ESP, visuals, movement, combat, camera, profiles, settings (i lowkey should have put the aimbot into combat and esp into visuals but whatever)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -253,6 +261,8 @@ do -- aimbot
     toggle(tab,"Prediction",function()return settings.aimbot_prediction end,function(v)settings.aimbot_prediction=v end).Position=UDim2.new(0,180,0,y+88)
     toggle(tab,"SilentAim",function()return settings.aimbot_silent end,function(v)settings.aimbot_silent=v end).Position=UDim2.new(0,320,0,y+88)
 end
+
+print("TABS LOADED")
 
 do -- ESP
     local tab=tabframes["ESP"]
@@ -285,6 +295,8 @@ do -- ESP
     toggle(tab,"Healthbar",function() return settings.esp_healthbar end,function(v)settings.esp_healthbar=v end).Position=UDim2.new(0,420,0,y)
 end
 
+print("ESP LOADED")
+
 do -- visuals
     local tab=tabframes["Visuals"]
     local y=0
@@ -307,6 +319,8 @@ do -- visuals
     end)
 end
 
+print("VISUALS LOADED")
+
 do -- movement
     local tab=tabframes["Movement"]
     local y=0
@@ -323,12 +337,15 @@ do -- movement
     keybindPicker(tab,"InfJump Key",function()return settings.movement_infjump_key end,function(v)settings.movement_infjump_key=v end).Position=UDim2.new(0,110,0,y)
 end
 
+print("MOVEMENT LOADED")
+
 do -- combat
     local tab=tabframes["Combat"]
     local y=0
     toggle(tab,"Triggerbot",function()return settings.combat_triggerbot end,function(v)settings.combat_triggerbot=v end).Position=UDim2.new(0,8,0,y)
     keybindPicker(tab,"Triggerbot Key",function()return settings.combat_triggerbot_key end,function(v)settings.combat_triggerbot_key=v end).Position=UDim2.new(0,110,0,y)
 end
+
 
 do -- camera
     local tab=tabframes["Camera"]
@@ -337,6 +354,8 @@ do -- camera
     toggle(tab,"Freecam",function()return settings.camera_freecam end,function(v)settings.camera_freecam=v end).Position=UDim2.new(0,260,0,y)
     keybindPicker(tab,"Freecam Key",function()return settings.camera_freecam_key end,function(v)settings.camera_freecam_key=v end).Position=UDim2.new(0,370,0,y)
 end
+
+print("COMBAT & CAMERA LOADED")
 
 do -- profiles
     local tab=tabframes["Profiles"]
@@ -407,6 +426,8 @@ do -- profiles
     end)
 end
 
+print("PROFILES LOADED")
+
 do -- settings
     local tab=tabframes["Settings"]
     local y=0
@@ -454,6 +475,8 @@ do -- settings
     end)
 end
 
+print("SETTINGS LOADED")
+
 ---------------------------------------------------------------------
 -- TAB SWITCHING & DRAGGING
 ---------------------------------------------------------------------
@@ -487,6 +510,8 @@ runservice.RenderStepped:Connect(function(dt)
         main.Position=main.Position+UDim2.new(0,velocity.X*dt,0,velocity.Y*dt);velocity=velocity*0.88
     end
 end)
+
+print("TAB SWITCHING & DRAGGING LOADED")
 
 ---------------------------------------------------------------------
 -- MAIN LOGIC LOOPS (ESP, AIMBOT, MOVEMENT, CAMERA, VISUALS, ETC)
