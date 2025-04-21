@@ -1,112 +1,102 @@
-local Theme = require(script.Parent.theme)
+--// Main Glass UI - Rayfield-inspired, One File Version
+local Tabs = { "Aimbot", "ESP", "Visuals", "Movement", "Combat", "Camera", "Settings" }
 
-local UI = {}
-UI.__index = UI
+-- Theme settings
+local Theme = {
+    GlassColor        = Color3.fromRGB(232, 230, 255),
+    GlassDecor        = Color3.fromRGB(255, 239, 255),
+    AccentPink        = Color3.fromRGB(244, 189, 255),
+    AccentBlue        = Color3.fromRGB(190, 225, 255),
+    AccentWhite       = Color3.fromRGB(235, 235, 240),
+    MonoChrome        = Color3.fromRGB(215, 215, 215),
+    Neon              = Color3.fromRGB(255, 174, 255),
+    GlassTransparency = 0.22,
+    Font              = Enum.Font.Gotham,
+    CornerRadius      = UDim.new(0, 12)
+}
 
-function UI:CreateMainFrame(theme)
-	local ScreenGui = Instance.new("ScreenGui")
-	ScreenGui.Name = "GlassHub"
-	ScreenGui.ResetOnSpawn = false
-	ScreenGui.Parent = game:GetService("CoreGui")
-
-	local MainFrame = Instance.new("Frame")
-	MainFrame.Name = "MainFrame"
-	MainFrame.Size = UDim2.new(0, 650, 0, 420)
-	MainFrame.Position = UDim2.new(0.5, -325, 0.5, -210)
-	MainFrame.BackgroundColor3 = theme.GlassColor
-	MainFrame.BackgroundTransparency = theme.GlassTransparency
-	MainFrame.Parent = ScreenGui
-
-	Theme:ApplyUICorner(MainFrame)
-	Theme:ApplyOutline(MainFrame, theme.Neon)
-
-	-- Header
-	local Header = Instance.new("Frame")
-	Header.Name = "Header"
-	Header.Size = UDim2.new(1, 0, 0, 50)
-	Header.BackgroundColor3 = theme.AccentPink
-	Theme:ApplyUICorner(Header)
-	Header.Parent = MainFrame
-
-	local Title = Instance.new("TextLabel")
-	Title.Size = UDim2.new(1, 0, 1, 0)
-	Title.BackgroundTransparency = 1
-	Title.Text = "GlassHub"
-	Title.Font = Enum.Font.GothamBold
-	Title.TextSize = 24
-	Title.TextColor3 = theme.MonoChrome
-	Title.Parent = Header
-
-	-- Tab bar
-	local TabBar = Instance.new("Frame")
-	TabBar.Name = "TabBar"
-	TabBar.Position = UDim2.new(0, 0, 0, 50)
-	TabBar.Size = UDim2.new(1, 0, 0, 40)
-	TabBar.BackgroundTransparency = 1
-	TabBar.Parent = MainFrame
-
-	-- Content container
-	local Content = Instance.new("Frame")
-	Content.Name = "Content"
-	Content.Position = UDim2.new(0, 0, 0, 90)
-	Content.Size = UDim2.new(1, 0, 1, -90)
-	Content.BackgroundTransparency = 1
-	Content.ClipsDescendants = true
-	Content.Parent = MainFrame
-
-	return {
-		MainFrame = MainFrame,
-		Header = Header,
-		TabBar = TabBar,
-		Content = Content,
-		Tabs = {}
-	}
+-- Utility functions
+local function ApplyUICorner(instance, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = radius or Theme.CornerRadius
+    corner.Parent = instance
 end
 
-function UI:CreateTab(ui, name)
-	local button = Instance.new("TextButton")
-	button.Size = UDim2.new(0, 90, 1, 0)
-	button.BackgroundColor3 = Color3.fromRGB(220, 220, 230)
-	button.Text = name
-	button.Font = Enum.Font.Gotham
-	button.TextColor3 = Color3.fromRGB(100, 100, 255)
-	button.TextSize = 16
-	button.Parent = ui.TabBar
-
-	local tabFrame = Instance.new("Frame")
-	tabFrame.Name = name
-	tabFrame.Size = UDim2.new(1, 0, 1, 0)
-	tabFrame.BackgroundTransparency = 1
-	tabFrame.Visible = false
-	tabFrame.Parent = ui.Content
-
-	ui.Tabs[name] = tabFrame
-
-	button.MouseButton1Click:Connect(function()
-		for _, tab in pairs(ui.Tabs) do tab.Visible = false end
-		tabFrame.Visible = true
-	end)
-
-	return tabFrame
+local function ApplyOutline(instance, color)
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color or Theme.Neon
+    stroke.Thickness = 2
+    stroke.Transparency = 0.3
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = instance
 end
 
-function UI:CreateToggle(parent, label, callback)
-	local toggle = Instance.new("TextButton")
-	toggle.Size = UDim2.new(0, 180, 0, 32)
-	toggle.BackgroundColor3 = Theme.AccentWhite
-	toggle.TextColor3 = Theme.AccentBlue
-	toggle.Text = label .. ": OFF"
-	toggle.Font = Enum.Font.Gotham
-	toggle.TextSize = 16
-	toggle.Parent = parent
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GlassUI"
+screenGui.ResetOnSpawn = false
+pcall(function() screenGui.Parent = game:GetService("CoreGui") end)
 
-	local state = false
-	toggle.MouseButton1Click:Connect(function()
-		state = not state
-		toggle.Text = label .. ": " .. (state and "ON" or "OFF")
-		toggle.TextColor3 = state and Color3.fromRGB(0, 200, 100) or Theme.AccentBlue
-		callback(state)
-	end)
+-- Create Main Frame
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 600, 0, 400)
+main.Position = UDim2.new(0.5, -300, 0.5, -200)
+main.BackgroundColor3 = Theme.GlassColor
+main.BackgroundTransparency = Theme.GlassTransparency
+main.Name = "Main"
+main.Parent = screenGui
+ApplyUICorner(main)
+ApplyOutline(main)
+
+-- Create Tab Bar
+local tabBar = Instance.new("Frame")
+tabBar.Size = UDim2.new(1, 0, 0, 40)
+tabBar.BackgroundColor3 = Theme.AccentWhite
+tabBar.Parent = main
+ApplyUICorner(tabBar, UDim.new(0, 8))
+
+-- Create Content Holder
+local tabHolder = Instance.new("Frame")
+tabHolder.Position = UDim2.new(0, 0, 0, 40)
+tabHolder.Size = UDim2.new(1, 0, 1, -40)
+tabHolder.BackgroundTransparency = 1
+tabHolder.Name = "Content"
+tabHolder.Parent = main
+
+local uiContent = {}
+
+-- Tab Switch Logic
+local function switchTab(tabName)
+    for name, tab in pairs(uiContent) do
+        tab.Visible = (name == tabName)
+    end
 end
 
-return UI
+-- Create Tabs
+for i, tabName in ipairs(Tabs) do
+    local button = Instance.new("TextButton")
+    button.Text = tabName
+    button.Size = UDim2.new(0, 80, 1, 0)
+    button.Position = UDim2.new(0, (i - 1) * 85, 0, 0)
+    button.BackgroundColor3 = Theme.AccentBlue
+    button.TextColor3 = Color3.new(1, 1, 1)
+    button.Font = Theme.Font
+    button.TextSize = 14
+    button.Parent = tabBar
+    ApplyUICorner(button, UDim.new(0, 6))
+
+    local content = Instance.new("Frame")
+    content.Name = tabName
+    content.Size = UDim2.new(1, 0, 1, 0)
+    content.BackgroundTransparency = 1
+    content.Visible = false
+    content.Parent = tabHolder
+
+    uiContent[tabName] = content
+
+    button.MouseButton1Click:Connect(function()
+        switchTab(tabName)
+    end)
+end
+
+switchTab("Aimbot") -- default selected
