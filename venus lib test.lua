@@ -387,7 +387,7 @@ FemboyHub.Settings = {
     },
     Misc = {
         ServerHop = { Enabled = false, AutoRejoin = false },
-        ChatSpammer = { Enabled = false, Message = "Femboy Hub User!", Delay = 5, Mode = "RandomPlayer", RandomMessages = {"Hello!", "Nice shot!", "GG!"} },
+        ChatSpammer = { Enabled = false, Message = "fmboy hub on top", Delay = 5, Mode = "RandomPlayer", RandomMessages = {"zaz hop on", "lil scoon", "im a chode"} },
         AutoFarm = { Enabled = false },
         UnlockMouse = { Enabled = false },
         CustomCrosshair = {
