@@ -18,7 +18,7 @@ if not VenusLoadSuccess or not Venus then
     errMsg.Font = Enum.Font.SourceSansSemibold
     errMsg.TextSize = 18
     errMsg.TextWrapped = true
-    errMsg.Text = "FEMBOY HUB CRITICAL ERROR:\nFailed to load the Venus UI Library. This script cannot function.\n\nPossible reasons:\n- No internet connection.\n- The library URL is incorrect or the source is down.\n- Your executor doesn't support HttpGet or loadstring correctly.\n\nPlease check the console (F9) for more details."
+    errMsg.Text = "FEMBOY HUB CRITICAL ERROR: Failed to load the Venus UI Library. Please check the console (F9) for more details."
     return
 end
 _G.Venus = Venus
@@ -387,7 +387,7 @@ FemboyHub.Settings = {
     },
     Misc = {
         ServerHop = { Enabled = false, AutoRejoin = false },
-        ChatSpammer = { Enabled = false, Message = "fmboy hub on top", Delay = 5, Mode = "RandomPlayer", RandomMessages = {"zaz hop on", "lil scoon", "im a chode"} },
+        ChatSpammer = { Enabled = false, Message = "f", Delay = 5, Mode = "RandomPlayer", RandomMessages = {"cking", "agg", "nI"} },
         AutoFarm = { Enabled = false },
         UnlockMouse = { Enabled = false },
         CustomCrosshair = {
@@ -400,7 +400,7 @@ FemboyHub.Settings = {
         },
         FPSUnlocker = { Enabled = false },
         StreamerMode = { Enabled = false, HideNames = true, ObfuscateSelfName = true },
-        Watermark = { Enabled = true, Text = FemboyHub.Name .. " " .. FemboyHub.Version, Position = "TopLeft", Color = Color3.fromRGB(255,182,193) }
+        Watermark = { Enabled = true, Text = FemboyHub.Name .. " " .. FemboyHub.Version, Position = "opLeft", Color = Color3.fromRGB(255,182,193) } -- 
     },
     UITheme = {
         CurrentTheme = "FemboyPink",
@@ -1138,7 +1138,7 @@ FemboyHub.UI.Create = function()
     SecAimbotMain:CreateToggle({ Name = "Show FOV Circle", Default = FemboyHub.Settings.Aimbot.ShowFOV, Callback = function(v) FemboyHub.Settings.Aimbot.ShowFOV = v end })
     SecAimbotMain:CreateToggle({ Name = "Visibility Check", Default = FemboyHub.Settings.Aimbot.VisibilityCheck, Callback = function(v) FemboyHub.Settings.Aimbot.VisibilityCheck = v end })
     
-    local SecAimbotExtra = TabAimbot:CreateSection({Name = "Aimbot Enhancements"})
+    local SecAimbotExtra = TabAimbot:CreateSection({Name = "Aimbot Extras"})
     SecAimbotExtra:CreateToggle({ Name = "Smoothing", Default = FemboyHub.Settings.Aimbot.Smoothing.Enabled, Callback = function(v) FemboyHub.Settings.Aimbot.Smoothing.Enabled = v end })
     SecAimbotExtra:CreateSlider({ Name = "Smooth Factor", Min = 1, Max = 30, Default = FemboyHub.Settings.Aimbot.Smoothing.Factor, Increment = 1, Callback = function(v) FemboyHub.Settings.Aimbot.Smoothing.Factor = v end })
     SecAimbotExtra:CreateToggle({ Name = "Prediction", Default = FemboyHub.Settings.Aimbot.Prediction.Enabled, Callback = function(v) FemboyHub.Settings.Aimbot.Prediction.Enabled = v end })
@@ -1173,7 +1173,7 @@ FemboyHub.UI.Create = function()
     local TabMisc = FemboyHub.UI.Window:CreateTab({Name = "Misc"})
     local SecGeneralMisc = TabMisc:CreateSection({Name = "General"})
     SecGeneralMisc:CreateToggle({Name="Watermark", Default=FemboyHub.Settings.Misc.Watermark.Enabled, Callback=function(v) FemboyHub.Settings.Misc.Watermark.Enabled=v end})
-    SecGeneralMisc:CreateTextbox({Name="Watermark Text", Default=FemboyHub.Settings.Misc.Watermark.Text, Placeholder="Enter watermark text...", Callback=function(t)FemboyHub.Settings.Misc.Watermark.Text = t end})
+    --SecGeneralMisc:CreateTextbox({Name="Watermark Text", Default=FemboyHub.Settings.Misc.Watermark.Text, Placeholder="Enter watermark text...", Callback=function(t)FemboyHub.Settings.Misc.Watermark.Text = t end})
     SecGeneralMisc:CreateKeybind({ Name = "Master UI Toggle Key", Default = FemboyHub.Settings.Global.MasterToggleKey, Mode = "Toggle", Callback = function(key) FemboyHub.Settings.Global.MasterToggleKey = key; FemboyHub.UI.Window:Toggle(key) end })
     
     local SecConfigs = TabMisc:CreateSection({Name="Configuration (Conceptual)"})
