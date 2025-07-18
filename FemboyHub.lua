@@ -2,8 +2,8 @@
 getgenv().AirHub = {}
 
 -- load the core logic modules
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub/main/Modules/Aimbot.lua"))() end)
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub/main/Modules/Wall%20Hack.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/venuslibtest/refs/heads/main/modules/aimbot.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/venuslibtest/refs/heads/main/modules/esp.lua"))() end)
 
 -- splix ui shit
 local SplixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/insanedude59/SplixUiLib/main/Main"))()
