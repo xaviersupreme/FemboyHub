@@ -3,8 +3,8 @@
 
 getgenv().AirHub = {} -- The modules use this global name, so we must keep it for them to function.
 
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/venuslibtest/refs/heads/main/modules/aimbot.lua"))() end)
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/venuslibtest/refs/heads/main/modules/esp.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/refs/heads/main/modules/aimbot.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/refs/heads/main/modules/esp.lua"))() end)
 
 
 -- fuckass ui lib loader
