@@ -1,34 +1,37 @@
--- env and module loader
-getgenv().AirHub = {}
 
--- load the core logic modules
+-- env & module loading
+
+getgenv().AirHub = {} -- The modules use this global name, so we must keep it for them to function.
+
 pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/venuslibtest/refs/heads/main/modules/aimbot.lua"))() end)
 pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/venuslibtest/refs/heads/main/modules/esp.lua"))() end)
 
--- splix ui shit
-local SplixLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/insanedude59/SplixUiLib/main/Main"))()
-if not SplixLib or not SplixLib.new then
-    warn("FEMBOY HUB: CRITICAL FAILURE - Could not load Splix UI Library.")
+
+-- fuckass ui lib loader
+
+local Library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+if not Library then
+    warn("FEMBOY HUB: CRITICAL FAILURE - Could not load UI Library.")
     return
 end
 
+
 -- services and refs
 
-task.wait(0.5) -- wait for modules to populate the env
+task.wait(0.5) -- waits for modules to fully load and populate the environment
 local Aimbot, WallHack = getgenv().AirHub.Aimbot, getgenv().AirHub.WallHack
 if not (Aimbot and WallHack) then
-    warn("CRITICAL FAILURE - AirHub modules did not load correctly. The script cannot continue.")
+    warn("FEMBOY HUB: CRITICAL FAILURE - modules did not load correctly. The script cannot continue.")
     return
 end
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local Debris = game:GetService("Debris")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local Parts = {"Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}
+local Parts = {"Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm", "LeftUpperArm", "RightUpperArm", "LeftFoot", "LeftLowerLeg", "UpperTorso", "LeftUpperLeg", "RightFoot", "RightLowerLeg", "LowerTorso", "RightUpperLeg"}
 local Fonts = {"UI", "System", "Plex", "Monospace"}
 local TracersType = {"Bottom", "Center", "Mouse"}
 local HealthBarPos = {"Top", "Bottom", "Left", "Right"}
@@ -37,149 +40,162 @@ local HealthBarPos = {"Top", "Bottom", "Left", "Right"}
 local IsFlying = false
 local FlyBodyGyro, FlyBodyVelocity = nil, nil
 local OriginalWalkSpeed, OriginalJumpPower = 16, 50
-getgenv().Player_FlySpeed = 50
-getgenv().Player_FlyKey = Enum.KeyCode.F
-getgenv().Player_WalkSpeedValue = 32
-getgenv().Player_JumpPowerValue = 75
 
--- ui deffinitiotdkgdnkand
 
-local Window = SplixLib:new({
-    textsize = 13,
-    font = Enum.Font.RobotoMono,
-    name = "Femboy Hub",
-    color = Color3.fromRGB(255, 182, 193) --  theme (soft pink)
+-- main UI & femboy theme
+
+Library.UnloadCallback = function()
+	if Aimbot and Aimbot.Functions and Aimbot.Functions.Exit then Aimbot.Functions:Exit() end
+	if WallHack and WallHack.Functions and WallHack.Functions.Exit then WallHack.Functions:Exit() end
+	getgenv().AirHub = nil
+end
+
+
+local FemboyTheme = [[{"__Designer.Colors.topGradient":"f2a7d8","__Designer.Colors.section":"d8a7f2","__Designer.Colors.hoveredOptionBottom":"f2a7d8","__Designer.Background.ImageAssetID":"","__Designer.Colors.selectedOption":"f2a7d8","__Designer.Colors.unselectedOption":"3d2842","__Designer.Files.WorkspaceFile":"AirHub","__Designer.Colors.unhoveredOptionTop":"211524","__Designer.Colors.outerBorder":"291a2e","__Designer.Background.ImageColor":"ffc4e8","__Designer.Colors.tabText":"faddff","__Designer.Colors.elementBorder":"1c121f","__Designer.Background.ImageTransparency":100,"__Designer.Colors.background":"211524","__Designer.Colors.innerBorder":"4a3152","__Designer.Colors.bottomGradient":"ad71c4","__Designer.Colors.sectionBackground":"3d2842","__Designer.Colors.hoveredOptionTop":"f2a7d8","__Designer.Colors.otherElementText":"e6c4ff","__Designer.Colors.main":"ffb5e1","__Designer.Colors.elementText":"ffe3f8","__Designer.Colors.unhoveredOptionBottom":"3d2842","__Designer.Background.UseBackgroundImage":false}]]
+
+-- main window creationnn
+local MainFrame = Library:CreateWindow({
+	Name = "Femboy Hub",
+	Theme = FemboyTheme,
+    Themeable = {
+		Info = "Femboy Hub",
+		Credit = false
+	}
 })
 
-local AimbotTab = Window:page({name = "Aimbot"})
-local VisualsTab = Window:page({name = "Visuals"})
-local CrosshairTab = Window:page({name = "Crosshair"})
-local PlayerTab = Window:page({name = "Player Mods"})
-local FunctionsTab = Window:page({name = "Functions"})
+
+-- tabs
+
+local AimbotTab = MainFrame:CreateTab({ Name = "Aimbot" })
+local VisualsTab = MainFrame:CreateTab({ Name = "Visuals" })
+local CrosshairTab = MainFrame:CreateTab({ Name = "Crosshair" })
+local PlayerTab = MainFrame:CreateTab({ Name = "Player Mods" })
+local FunctionsTab = MainFrame:CreateTab({ Name = "Functions" })
 
 
--- aimbot tab  shit
+-- aimbot tab
 
-local AimbotValuesSection = AimbotTab:section({name = "Values", side = "left", size = 200})
-local AimbotChecksSection = AimbotTab:section({name = "Checks", side = "left", size = 120})
-local AimbotThirdPersonSection = AimbotTab:section({name = "Third Person", side = "left", size = 90})
-local FOVValuesSection = AimbotTab:section({name = "Field Of View", side = "right", size = 120})
-local FOVAppearanceSection = AimbotTab:section({name = "FOV Circle Appearance", side = "right", size = 220})
+local Values = AimbotTab:CreateSection({ Name = "Values" })
+local Checks = AimbotTab:CreateSection({ Name = "Checks" })
+local ThirdPerson = AimbotTab:CreateSection({ Name = "Third Person" })
+local FOV_Values = AimbotTab:CreateSection({ Name = "Field Of View", Side = "Right" })
+local FOV_Appearance = AimbotTab:CreateSection({ Name = "FOV Circle Appearance", Side = "Right" })
 
-AimbotValuesSection:toggle({name = "Enable Aimbot", def = Aimbot.Settings.Enabled, callback = function(v) Aimbot.Settings.Enabled = v end})
-AimbotValuesSection:toggle({name = "Toggle Mode", def = Aimbot.Settings.Toggle, callback = function(v) Aimbot.Settings.Toggle = v end})
-AimbotValuesSection:dropdown({name = "Lock Part", def = Aimbot.Settings.LockPart, max = #Parts, options = Parts, callback = function(v) Aimbot.Settings.LockPart = v end})
-AimbotValuesSection:textbox({name = "Hotkey", def = Aimbot.Settings.TriggerKey, placeholder = "MouseButton2, E, etc.", callback = function(v) Aimbot.Settings.TriggerKey = v end})
-AimbotValuesSection:slider({name = "Smoothing", def = Aimbot.Settings.Sensitivity, max = 2, min = 0, rounding = false, measuring = "s", callback = function(v) Aimbot.Settings.Sensitivity = v end})
+Values:AddToggle({ Name = "Enabled", Value = Aimbot.Settings.Enabled, Callback = function(New) Aimbot.Settings.Enabled = New end })
+Values:AddToggle({ Name = "Toggle", Value = Aimbot.Settings.Toggle, Callback = function(New) Aimbot.Settings.Toggle = New end })
+Values:AddDropdown({ Name = "Lock Part", Value = Aimbot.Settings.LockPart, Callback = function(New) Aimbot.Settings.LockPart = New end, List = Parts, Nothing = "Head" })
+Values:AddTextbox({ Name = "Hotkey", Value = Aimbot.Settings.TriggerKey, Callback = function(New) Aimbot.Settings.TriggerKey = New end })
+Values:AddSlider({ Name = "Sensitivity", Value = Aimbot.Settings.Sensitivity, Callback = function(New) Aimbot.Settings.Sensitivity = New end, Min = 0, Max = 1, Decimals = 2 })
 
-AimbotChecksSection:toggle({name = "Team Check", def = Aimbot.Settings.TeamCheck, callback = function(v) Aimbot.Settings.TeamCheck = v end})
-AimbotChecksSection:toggle({name = "Wall Check", def = Aimbot.Settings.WallCheck, callback = function(v) Aimbot.Settings.WallCheck = v end})
-AimbotChecksSection:toggle({name = "Alive Check", def = Aimbot.Settings.AliveCheck, callback = function(v) Aimbot.Settings.AliveCheck = v end})
+Checks:AddToggle({ Name = "Team Check", Value = Aimbot.Settings.TeamCheck, Callback = function(New) Aimbot.Settings.TeamCheck = New end })
+Checks:AddToggle({ Name = "Wall Check", Value = Aimbot.Settings.WallCheck, Callback = function(New) Aimbot.Settings.WallCheck = New end })
+Checks:AddToggle({ Name = "Alive Check", Value = Aimbot.Settings.AliveCheck, Callback = function(New) Aimbot.Settings.AliveCheck = New end })
 
-AimbotThirdPersonSection:toggle({name = "Enable Third Person", def = Aimbot.Settings.ThirdPerson, callback = function(v) Aimbot.Settings.ThirdPerson = v end})
-AimbotThirdPersonSection:slider({name = "3P Sensitivity", def = Aimbot.Settings.ThirdPersonSensitivity, max = 5, min = 0.1, rounding = false, callback = function(v) Aimbot.Settings.ThirdPersonSensitivity = v end})
+ThirdPerson:AddToggle({ Name = "Enable Third Person", Value = Aimbot.Settings.ThirdPerson, Callback = function(New) Aimbot.Settings.ThirdPerson = New end })
+ThirdPerson:AddSlider({ Name = "Sensitivity", Value = Aimbot.Settings.ThirdPersonSensitivity, Callback = function(New) Aimbot.Settings.ThirdPersonSensitivity = New end, Min = 0.1, Max = 5, Decimals = 1 })
 
-FOVValuesSection:toggle({name = "Enable FOV", def = Aimbot.FOVSettings.Enabled, callback = function(v) Aimbot.FOVSettings.Enabled = v end})
-FOVValuesSection:toggle({name = "Visible", def = Aimbot.FOVSettings.Visible, callback = function(v) Aimbot.FOVSettings.Visible = v end})
-FOVValuesSection:slider({name = "Amount (Radius)", def = Aimbot.FOVSettings.Amount, max = 500, min = 10, rounding = true, callback = function(v) Aimbot.FOVSettings.Amount = v end})
+FOV_Values:AddToggle({ Name = "Enabled", Value = Aimbot.FOVSettings.Enabled, Callback = function(New) Aimbot.FOVSettings.Enabled = New end })
+FOV_Values:AddToggle({ Name = "Visible", Value = Aimbot.FOVSettings.Visible, Callback = function(New) Aimbot.FOVSettings.Visible = New end })
+FOV_Values:AddSlider({ Name = "Amount", Value = Aimbot.FOVSettings.Amount, Callback = function(New) Aimbot.FOVSettings.Amount = New end, Min = 10, Max = 300 })
 
-FOVAppearanceSection:toggle({name = "Filled", def = Aimbot.FOVSettings.Filled, callback = function(v) Aimbot.FOVSettings.Filled = v end})
-FOVAppearanceSection:slider({name = "Transparency", def = Aimbot.FOVSettings.Transparency, max = 1, min = 0, rounding = false, callback = function(v) Aimbot.FOVSettings.Transparency = v end})
-FOVAppearanceSection:slider({name = "Sides", def = Aimbot.FOVSettings.Sides, max = 60, min = 3, rounding = true, callback = function(v) Aimbot.FOVSettings.Sides = v end})
-FOVAppearanceSection:slider({name = "Thickness", def = Aimbot.FOVSettings.Thickness, max = 10, min = 1, rounding = true, callback = function(v) Aimbot.FOVSettings.Thickness = v end})
-FOVAppearanceSection:colorpicker({name = "Color", def = Aimbot.FOVSettings.Color, callback = function(v) Aimbot.FOVSettings.Color = v end})
-FOVAppearanceSection:colorpicker({name = "Locked Color", def = Aimbot.FOVSettings.LockedColor, callback = function(v) Aimbot.FOVSettings.LockedColor = v end})
-
-
--- esp tab stuff
-
-local ESPChecksSection = VisualsTab:section({name = "Checks", side = "left", size = 120})
-local ESPSettingsSection = VisualsTab:section({name = "ESP Settings", side = "left", size = 320})
-local BoxesSettingsSection = VisualsTab:section({name = "Boxes Settings", side = "left", size = 250})
-local ChamsSettingsSection = VisualsTab:section({name = "Chams Settings", side = "right", size = 220})
-local TracersSettingsSection = VisualsTab:section({name = "Tracers Settings", side = "right", size = 150})
-local HeadDotsSettingsSection = VisualsTab:section({name = "Head Dots", side = "right", size = 220})
-local HealthBarSettingsSection = VisualsTab:section({name = "Health Bar", side = "right", size = 220})
-
-ESPChecksSection:toggle({name = "Enable Visuals", def = WallHack.Settings.Enabled, callback = function(v) WallHack.Settings.Enabled = v end})
-ESPChecksSection:toggle({name = "Team Check", def = WallHack.Settings.TeamCheck, callback = function(v) WallHack.Settings.TeamCheck = v end})
-ESPChecksSection:toggle({name = "Alive Check", def = WallHack.Settings.AliveCheck, callback = function(v) WallHack.Settings.AliveCheck = v end})
-
-ESPSettingsSection:toggle({name = "Enable Text ESP", def = WallHack.Visuals.ESPSettings.Enabled, callback = function(v) WallHack.Visuals.ESPSettings.Enabled = v end})
-ESPSettingsSection:toggle({name = "Outline", def = WallHack.Visuals.ESPSettings.Outline, callback = function(v) WallHack.Visuals.ESPSettings.Outline = v end})
-ESPSettingsSection:toggle({name = "Display Distance", def = WallHack.Visuals.ESPSettings.DisplayDistance, callback = function(v) WallHack.Visuals.ESPSettings.DisplayDistance = v end})
-ESPSettingsSection:toggle({name = "Display Health", def = WallHack.Visuals.ESPSettings.DisplayHealth, callback = function(v) WallHack.Visuals.ESPSettings.DisplayHealth = v end})
-ESPSettingsSection:toggle({name = "Display Name", def = WallHack.Visuals.ESPSettings.DisplayName, callback = function(v) WallHack.Visuals.ESPSettings.DisplayName = v end})
-ESPSettingsSection:slider({name = "Text Offset", def = WallHack.Visuals.ESPSettings.Offset, max = 50, min = -50, rounding = true, callback = function(v) WallHack.Visuals.ESPSettings.Offset = v end})
-ESPSettingsSection:colorpicker({name = "Text Color", def = WallHack.Visuals.ESPSettings.TextColor, callback = function(v) WallHack.Visuals.ESPSettings.TextColor = v end})
-ESPSettingsSection:colorpicker({name = "Outline Color", def = WallHack.Visuals.ESPSettings.OutlineColor, callback = function(v) WallHack.Visuals.ESPSettings.OutlineColor = v end})
-ESPSettingsSection:slider({name = "Text Size", def = WallHack.Visuals.ESPSettings.TextSize, max = 24, min = 8, rounding = true, callback = function(v) WallHack.Visuals.ESPSettings.TextSize = v end})
-ESPSettingsSection:slider({name = "Text Transparency", def = WallHack.Visuals.ESPSettings.TextTransparency, max = 1, min = 0, rounding = false, callback = function(v) WallHack.Visuals.ESPSettings.TextTransparency = v end})
-ESPSettingsSection:dropdown({name = "Font", def = "UI", max = #Fonts, options = Fonts, callback = function(v) WallHack.Visuals.ESPSettings.TextFont = Drawing.Fonts[v] end})
-
-BoxesSettingsSection:toggle({name = "Enable Boxes", def = WallHack.Visuals.BoxSettings.Enabled, callback = function(v) WallHack.Visuals.BoxSettings.Enabled = v end})
-BoxesSettingsSection:toggle({name = "Filled (2D)", def = WallHack.Visuals.BoxSettings.Filled, callback = function(v) WallHack.Visuals.BoxSettings.Filled = v end})
-BoxesSettingsSection:dropdown({name = "Box Type", def = "3D", max = 2, options = {"3D", "2D"}, callback = function(v) WallHack.Visuals.BoxSettings.Type = (v == "3D" and 1 or 2) end})
-BoxesSettingsSection:colorpicker({name = "Box Color", def = WallHack.Visuals.BoxSettings.Color, callback = function(v) WallHack.Visuals.BoxSettings.Color = v end})
-BoxesSettingsSection:slider({name = "Thickness", def = WallHack.Visuals.BoxSettings.Thickness, max = 5, min = 1, rounding = true, callback = function(v) WallHack.Visuals.BoxSettings.Thickness = v end})
-BoxesSettingsSection:slider({name = "Transparency", def = WallHack.Visuals.BoxSettings.Transparency, max = 1, min = 0, rounding = false, callback = function(v) WallHack.Visuals.BoxSettings.Transparency = v end})
-BoxesSettingsSection:slider({name = "Scale Increase (3D)", def = WallHack.Visuals.BoxSettings.Increase, max = 5, min = 1, rounding = true, callback = function(v) WallHack.Visuals.BoxSettings.Increase = v end})
-
-ChamsSettingsSection:toggle({name = "Enable Chams", def = WallHack.Visuals.ChamsSettings.Enabled, callback = function(v) WallHack.Visuals.ChamsSettings.Enabled = v end})
-ChamsSettingsSection:toggle({name = "Filled", def = WallHack.Visuals.ChamsSettings.Filled, callback = function(v) WallHack.Visuals.ChamsSettings.Filled = v end})
-ChamsSettingsSection:toggle({name = "Entire Body (R15)", def = WallHack.Visuals.ChamsSettings.EntireBody, callback = function(v) WallHack.Visuals.ChamsSettings.EntireBody = v end})
-ChamsSettingsSection:colorpicker({name = "Chams Color", def = WallHack.Visuals.ChamsSettings.Color, callback = function(v) WallHack.Visuals.ChamsSettings.Color = v end})
-ChamsSettingsSection:slider({name = "Transparency", def = WallHack.Visuals.ChamsSettings.Transparency, max = 1, min = 0, rounding = false, callback = function(v) WallHack.Visuals.ChamsSettings.Transparency = v end})
-ChamsSettingsSection:slider({name = "Thickness", def = WallHack.Visuals.ChamsSettings.Thickness, max = 3, min = 0, rounding = true, callback = function(v) WallHack.Visuals.ChamsSettings.Thickness = v end})
-
-TracersSettingsSection:toggle({name = "Enable Tracers", def = WallHack.Visuals.TracersSettings.Enabled, callback = function(v) WallHack.Visuals.TracersSettings.Enabled = v end})
-TracersSettingsSection:dropdown({name = "Start From", def = "Bottom", max = #TracersType, options = TracersType, callback = function(v) WallHack.Visuals.TracersSettings.Type = (v == "Bottom" and 1 or (v == "Center" and 2 or 3)) end})
-TracersSettingsSection:colorpicker({name = "Tracer Color", def = WallHack.Visuals.TracersSettings.Color, callback = function(v) WallHack.Visuals.TracersSettings.Color = v end})
-TracersSettingsSection:slider({name = "Thickness", def = WallHack.Visuals.TracersSettings.Thickness, max = 5, min = 1, rounding = true, callback = function(v) WallHack.Visuals.TracersSettings.Thickness = v end})
-
-HeadDotsSettingsSection:toggle({name = "Enable Head Dots", def = WallHack.Visuals.HeadDotSettings.Enabled, callback = function(v) WallHack.Visuals.HeadDotSettings.Enabled = v end})
-HeadDotsSettingsSection:toggle({name = "Filled", def = WallHack.Visuals.HeadDotSettings.Filled, callback = function(v) WallHack.Visuals.HeadDotSettings.Filled = v end})
-HeadDotsSettingsSection:slider({name = "Sides", def = WallHack.Visuals.HeadDotSettings.Sides, max = 60, min = 3, rounding = true, callback = function(v) WallHack.Visuals.HeadDotSettings.Sides = v end})
-HeadDotsSettingsSection:slider({name = "Thickness", def = WallHack.Visuals.HeadDotSettings.Thickness, max = 5, min = 1, rounding = true, callback = function(v) WallHack.Visuals.HeadDotSettings.Thickness = v end})
-HeadDotsSettingsSection:colorpicker({name = "Head Dot Color", def = WallHack.Visuals.HeadDotSettings.Color, callback = function(v) WallHack.Visuals.HeadDotSettings.Color = v end})
-
-HealthBarSettingsSection:toggle({name = "Enable Health Bar", def = WallHack.Visuals.HealthBarSettings.Enabled, callback = function(v) WallHack.Visuals.HealthBarSettings.Enabled = v end})
-HealthBarSettingsSection:dropdown({name = "Position", def = "Left", max = #HealthBarPos, options = HealthBarPos, callback = function(New) WallHack.Visuals.HealthBarSettings.Type = (New == "Top" and 1 or New == "Bottom" and 2 or New == "Left" and 3 or 4) end})
-HealthBarSettingsSection:slider({name = "Transparency", def = WallHack.Visuals.HealthBarSettings.Transparency, max = 1, min = 0, rounding = false, callback = function(v) WallHack.Visuals.HealthBarSettings.Transparency = v end})
-HealthBarSettingsSection:slider({name = "Size", def = WallHack.Visuals.HealthBarSettings.Size, max = 10, min = 2, rounding = true, callback = function(v) WallHack.Visuals.HealthBarSettings.Size = v end})
-HealthBarSettingsSection:slider({name = "Offset", def = WallHack.Visuals.HealthBarSettings.Offset, max = 30, min = -30, rounding = true, callback = function(v) WallHack.Visuals.HealthBarSettings.Offset = v end})
-HealthBarSettingsSection:colorpicker({name = "Outline Color", def = WallHack.Visuals.HealthBarSettings.OutlineColor, callback = function(v) WallHack.Visuals.HealthBarSettings.OutlineColor = v end})
+FOV_Appearance:AddToggle({ Name = "Filled", Value = Aimbot.FOVSettings.Filled, Callback = function(New) Aimbot.FOVSettings.Filled = New end })
+FOV_Appearance:AddSlider({ Name = "Transparency", Value = Aimbot.FOVSettings.Transparency, Callback = function(New) Aimbot.FOVSettings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+FOV_Appearance:AddSlider({ Name = "Sides", Value = Aimbot.FOVSettings.Sides, Callback = function(New) Aimbot.FOVSettings.Sides = New end, Min = 3, Max = 60 }) -- this shit does not work for some reason
+FOV_Appearance:AddSlider({ Name = "Thickness", Value = Aimbot.FOVSettings.Thickness, Callback = function(New) Aimbot.FOVSettings.Thickness = New end, Min = 1, Max = 50 })
+FOV_Appearance:AddColorpicker({ Name = "Color", Value = Aimbot.FOVSettings.Color, Callback = function(New) Aimbot.FOVSettings.Color = New end })
+FOV_Appearance:AddColorpicker({ Name = "Locked Color", Value = Aimbot.FOVSettings.LockedColor, Callback = function(New) Aimbot.FOVSettings.LockedColor = New end })
 
 
--- crosshair UI
+-- visuals ui
 
-local CrosshairSettingsSection = CrosshairTab:section({name = "Settings", side = "left", size = 300})
-local CenterDotSettingsSection = CrosshairTab:section({name = "Center Dot Settings", side = "right", size = 200})
+local WallHackChecks = VisualsTab:CreateSection({ Name = "Checks" })
+local ESPSettings = VisualsTab:CreateSection({ Name = "ESP Settings" })
+local BoxesSettings = VisualsTab:CreateSection({ Name = "Boxes Settings" })
+local ChamsSettings = VisualsTab:CreateSection({ Name = "Chams Settings", Side = "Right" })
+local TracersSettings = VisualsTab:CreateSection({ Name = "Tracers Settings", Side = "Right" })
+local HeadDotsSettings = VisualsTab:CreateSection({ Name = "Head Dots Settings", Side = "Right" })
+local HealthBarSettings = VisualsTab:CreateSection({ Name = "Health Bar Settings", Side = "Right" })
 
-CrosshairSettingsSection:toggle({name = "Enable Crosshair", def = WallHack.Crosshair.Settings.Enabled, callback = function(v) WallHack.Crosshair.Settings.Enabled = v end})
-CrosshairSettingsSection:toggle({name = "Mouse Cursor", def = UserInputService.MouseIconEnabled, callback = function(v) UserInputService.MouseIconEnabled = v end})
-CrosshairSettingsSection:dropdown({name = "Position", def = "Mouse", max = 2, options = {"Mouse", "Center"}, callback = function(v) WallHack.Crosshair.Settings.Type = (v == "Mouse" and 1 or 2) end})
-CrosshairSettingsSection:colorpicker({name = "Color", def = WallHack.Crosshair.Settings.Color, callback = function(v) WallHack.Crosshair.Settings.Color = v end})
-CrosshairSettingsSection:slider({name = "Transparency", def = WallHack.Crosshair.Settings.Transparency, max = 1, min = 0, rounding = false, callback = function(v) WallHack.Crosshair.Settings.Transparency = v end})
-CrosshairSettingsSection:slider({name = "Size", def = WallHack.Crosshair.Settings.Size, max = 24, min = 8, rounding = true, callback = function(v) WallHack.Crosshair.Settings.Size = v end})
-CrosshairSettingsSection:slider({name = "Thickness", def = WallHack.Crosshair.Settings.Thickness, max = 5, min = 1, rounding = true, callback = function(v) WallHack.Crosshair.Settings.Thickness = v end})
-CrosshairSettingsSection:slider({name = "Gap Size", def = WallHack.Crosshair.Settings.GapSize, max = 20, min = 0, rounding = true, callback = function(v) WallHack.Crosshair.Settings.GapSize = v end})
-CrosshairSettingsSection:slider({name = "Rotation", def = WallHack.Crosshair.Settings.Rotation, max = 180, min = -180, rounding = true, callback = function(v) WallHack.Crosshair.Settings.Rotation = v end})
+WallHackChecks:AddToggle({ Name = "Enabled", Value = WallHack.Settings.Enabled, Callback = function(New) WallHack.Settings.Enabled = New end })
+WallHackChecks:AddToggle({ Name = "Team Check", Value = WallHack.Settings.TeamCheck, Callback = function(New) WallHack.Settings.TeamCheck = New end })
+WallHackChecks:AddToggle({ Name = "Alive Check", Value = WallHack.Settings.AliveCheck, Callback = function(New) WallHack.Settings.AliveCheck = New end })
 
-CenterDotSettingsSection:toggle({name = "Enable Center Dot", def = WallHack.Crosshair.Settings.CenterDot, callback = function(v) WallHack.Crosshair.Settings.CenterDot = v end})
-CenterDotSettingsSection:toggle({name = "Filled", def = WallHack.Crosshair.Settings.CenterDotFilled, callback = function(v) WallHack.Crosshair.Settings.CenterDotFilled = v end})
-CenterDotSettingsSection:colorpicker({name = "Dot Color", def = WallHack.Crosshair.Settings.CenterDotColor, callback = function(v) WallHack.Crosshair.Settings.CenterDotColor = v end})
-CenterDotSettingsSection:slider({name = "Dot Size", def = WallHack.Crosshair.Settings.CenterDotSize, max = 6, min = 1, rounding = true, callback = function(v) WallHack.Crosshair.Settings.CenterDotSize = v end})
-CenterDotSettingsSection:slider({name = "Dot Transparency", def = WallHack.Crosshair.Settings.CenterDotTransparency, max = 1, min = 0, rounding = false, callback = function(v) WallHack.Crosshair.Settings.CenterDotTransparency = v end})
+ESPSettings:AddToggle({ Name = "Enabled", Value = WallHack.Visuals.ESPSettings.Enabled, Callback = function(New) WallHack.Visuals.ESPSettings.Enabled = New end })
+ESPSettings:AddToggle({ Name = "Outline", Value = WallHack.Visuals.ESPSettings.Outline, Callback = function(New) WallHack.Visuals.ESPSettings.Outline = New end })
+ESPSettings:AddToggle({ Name = "Display Distance", Value = WallHack.Visuals.ESPSettings.DisplayDistance, Callback = function(New) WallHack.Visuals.ESPSettings.DisplayDistance = New end })
+ESPSettings:AddToggle({ Name = "Display Health", Value = WallHack.Visuals.ESPSettings.DisplayHealth, Callback = function(New) WallHack.Visuals.ESPSettings.DisplayHealth = New end })
+ESPSettings:AddToggle({ Name = "Display Name", Value = WallHack.Visuals.ESPSettings.DisplayName, Callback = function(New) WallHack.Visuals.ESPSettings.DisplayName = New end })
+ESPSettings:AddSlider({ Name = "Offset", Value = WallHack.Visuals.ESPSettings.Offset, Callback = function(New) WallHack.Visuals.ESPSettings.Offset = New end, Min = -30, Max = 30 })
+ESPSettings:AddColorpicker({ Name = "Text Color", Value = WallHack.Visuals.ESPSettings.TextColor, Callback = function(New) WallHack.Visuals.ESPSettings.TextColor = New end })
+ESPSettings:AddColorpicker({ Name = "Outline Color", Value = WallHack.Visuals.ESPSettings.OutlineColor, Callback = function(New) WallHack.Visuals.ESPSettings.OutlineColor = New end })
+ESPSettings:AddSlider({ Name = "Text Transparency", Value = WallHack.Visuals.ESPSettings.TextTransparency, Callback = function(New) WallHack.Visuals.ESPSettings.TextTransparency = New end, Min = 0, Max = 1, Decimals = 2 })
+ESPSettings:AddSlider({ Name = "Text Size", Value = WallHack.Visuals.ESPSettings.TextSize, Callback = function(New) WallHack.Visuals.ESPSettings.TextSize = New end, Min = 8, Max = 24 })
+ESPSettings:AddDropdown({ Name = "Text Font", Value = Fonts[WallHack.Visuals.ESPSettings.TextFont + 1], Callback = function(New) WallHack.Visuals.ESPSettings.TextFont = Drawing.Fonts[New] end, List = Fonts, Nothing = "UI" })
+
+BoxesSettings:AddToggle({ Name = "Enabled", Value = WallHack.Visuals.BoxSettings.Enabled, Callback = function(New) WallHack.Visuals.BoxSettings.Enabled = New end })
+BoxesSettings:AddSlider({ Name = "Transparency", Value = WallHack.Visuals.BoxSettings.Transparency, Callback = function(New) WallHack.Visuals.BoxSettings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+BoxesSettings:AddSlider({ Name = "Thickness", Value = WallHack.Visuals.BoxSettings.Thickness, Callback = function(New) WallHack.Visuals.BoxSettings.Thickness = New end, Min = 1, Max = 5 })
+BoxesSettings:AddSlider({ Name = "Scale Increase (For 3D)", Value = WallHack.Visuals.BoxSettings.Increase, Callback = function(New) WallHack.Visuals.BoxSettings.Increase = New end, Min = 1, Max = 5 })
+BoxesSettings:AddColorpicker({ Name = "Color", Value = WallHack.Visuals.BoxSettings.Color, Callback = function(New) WallHack.Visuals.BoxSettings.Color = New end })
+BoxesSettings:AddDropdown({ Name = "Type", Value = WallHack.Visuals.BoxSettings.Type == 1 and "3D" or "2D", Callback = function(New) WallHack.Visuals.BoxSettings.Type = New == "3D" and 1 or 2 end, List = {"3D", "2D"}, Nothing = "3D" })
+BoxesSettings:AddToggle({ Name = "Filled (2D Square)", Value = WallHack.Visuals.BoxSettings.Filled, Callback = function(New) WallHack.Visuals.BoxSettings.Filled = New end })
+
+ChamsSettings:AddToggle({ Name = "Enabled", Value = WallHack.Visuals.ChamsSettings.Enabled, Callback = function(New) WallHack.Visuals.ChamsSettings.Enabled = New end })
+ChamsSettings:AddToggle({ Name = "Filled", Value = WallHack.Visuals.ChamsSettings.Filled, Callback = function(New) WallHack.Visuals.ChamsSettings.Filled = New end })
+ChamsSettings:AddToggle({ Name = "Entire Body (For R15)", Value = WallHack.Visuals.ChamsSettings.EntireBody, Callback = function(New) WallHack.Visuals.ChamsSettings.EntireBody = New end })
+ChamsSettings:AddSlider({ Name = "Transparency", Value = WallHack.Visuals.ChamsSettings.Transparency, Callback = function(New) WallHack.Visuals.ChamsSettings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+ChamsSettings:AddSlider({ Name = "Thickness", Value = WallHack.Visuals.ChamsSettings.Thickness, Callback = function(New) WallHack.Visuals.ChamsSettings.Thickness = New end, Min = 0, Max = 3 })
+ChamsSettings:AddColorpicker({ Name = "Color", Value = WallHack.Visuals.ChamsSettings.Color, Callback = function(New) WallHack.Visuals.ChamsSettings.Color = New end })
+
+TracersSettings:AddToggle({ Name = "Enabled", Value = WallHack.Visuals.TracersSettings.Enabled, Callback = function(New) WallHack.Visuals.TracersSettings.Enabled = New end })
+TracersSettings:AddSlider({ Name = "Transparency", Value = WallHack.Visuals.TracersSettings.Transparency, Callback = function(New) WallHack.Visuals.TracersSettings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+TracersSettings:AddSlider({ Name = "Thickness", Value = WallHack.Visuals.TracersSettings.Thickness, Callback = function(New) WallHack.Visuals.TracersSettings.Thickness = New end, Min = 1, Max = 5 })
+TracersSettings:AddColorpicker({ Name = "Color", Value = WallHack.Visuals.TracersSettings.Color, Callback = function(New) WallHack.Visuals.TracersSettings.Color = New end })
+TracersSettings:AddDropdown({ Name = "Start From", Value = TracersType[WallHack.Visuals.TracersSettings.Type], Callback = function(New) WallHack.Visuals.TracersSettings.Type = table.find(TracersType, New) end, List = TracersType, Nothing = "Bottom" })
+
+HeadDotsSettings:AddToggle({ Name = "Enabled", Value = WallHack.Visuals.HeadDotSettings.Enabled, Callback = function(New) WallHack.Visuals.HeadDotSettings.Enabled = New end })
+HeadDotsSettings:AddToggle({ Name = "Filled", Value = WallHack.Visuals.HeadDotSettings.Filled, Callback = function(New) WallHack.Visuals.HeadDotSettings.Filled = New end })
+HeadDotsSettings:AddSlider({ Name = "Transparency", Value = WallHack.Visuals.HeadDotSettings.Transparency, Callback = function(New) WallHack.Visuals.HeadDotSettings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+HeadDotsSettings:AddSlider({ Name = "Thickness", Value = WallHack.Visuals.HeadDotSettings.Thickness, Callback = function(New) WallHack.Visuals.HeadDotSettings.Thickness = New end, Min = 1, Max = 5 })
+HeadDotsSettings:AddSlider({ Name = "Sides", Value = WallHack.Visuals.HeadDotSettings.Sides, Callback = function(New) WallHack.Visuals.HeadDotSettings.Sides = New end, Min = 3, Max = 60 })
+HeadDotsSettings:AddColorpicker({ Name = "Color", Value = WallHack.Visuals.HeadDotSettings.Color, Callback = function(New) WallHack.Visuals.HeadDotSettings.Color = New end })
+
+HealthBarSettings:AddToggle({ Name = "Enabled", Value = WallHack.Visuals.HealthBarSettings.Enabled, Callback = function(New) WallHack.Visuals.HealthBarSettings.Enabled = New end })
+HealthBarSettings:AddDropdown({ Name = "Position", Value = HealthBarPos[WallHack.Visuals.HealthBarSettings.Type], Callback = function(New) WallHack.Visuals.HealthBarSettings.Type = (New == "Top" and 1 or New == "Bottom" and 2 or New == "Left" and 3 or 4) end, List = HealthBarPos, Nothing = "Left" })
+HealthBarSettings:AddSlider({ Name = "Transparency", Value = WallHack.Visuals.HealthBarSettings.Transparency, Callback = function(New) WallHack.Visuals.HealthBarSettings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+HealthBarSettings:AddSlider({ Name = "Size", Value = WallHack.Visuals.HealthBarSettings.Size, Callback = function(New) WallHack.Visuals.HealthBarSettings.Size = New end, Min = 2, Max = 10 })
+HealthBarSettings:AddSlider({ Name = "Offset", Value = WallHack.Visuals.HealthBarSettings.Offset, Callback = function(New) WallHack.Visuals.HealthBarSettings.Offset = New end, Min = -30, Max = 30 })
+HealthBarSettings:AddColorpicker({ Name = "Outline Color", Value = WallHack.Visuals.HealthBarSettings.OutlineColor, Callback = function(New) WallHack.Visuals.HealthBarSettings.OutlineColor = New end })
 
 
--- player mods tab
+-- crosshair tabs
 
-local FlyToggleObject = PlayerTab:section({name = "Fly", side = "left", size = 120})
-local WSJSTab = PlayerTab:section({name = "WalkSpeed / JumpPower", side = "right", size = 180})
+local CrosshairSettings = CrosshairTab:CreateSection({ Name = "Settings" })
+local CrosshairSettings_CenterDot = CrosshairTab:CreateSection({ Name = "Center Dot Settings", Side = "Right" })
 
-local function ApplyFly(state)
-    IsFlying = state; local char, root, hum = LocalPlayer.Character, LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+CrosshairSettings:AddToggle({ Name = "Enabled", Value = WallHack.Crosshair.Settings.Enabled, Callback = function(New) WallHack.Crosshair.Settings.Enabled = New end })
+CrosshairSettings:AddToggle({ Name = "Mouse Cursor", Value = UserInputService.MouseIconEnabled, Callback = function(New) UserInputService.MouseIconEnabled = New end })
+CrosshairSettings:AddColorpicker({ Name = "Color", Value = WallHack.Crosshair.Settings.Color, Callback = function(New) WallHack.Crosshair.Settings.Color = New end })
+CrosshairSettings:AddSlider({ Name = "Transparency", Value = WallHack.Crosshair.Settings.Transparency, Callback = function(New) WallHack.Crosshair.Settings.Transparency = New end, Min = 0, Max = 1, Decimals = 2 })
+CrosshairSettings:AddSlider({ Name = "Size", Value = WallHack.Crosshair.Settings.Size, Callback = function(New) WallHack.Crosshair.Settings.Size = New end, Min = 8, Max = 24 })
+CrosshairSettings:AddSlider({ Name = "Thickness", Value = WallHack.Crosshair.Settings.Thickness, Callback = function(New) WallHack.Crosshair.Settings.Thickness = New end, Min = 1, Max = 5 })
+CrosshairSettings:AddSlider({ Name = "Gap Size", Value = WallHack.Crosshair.Settings.GapSize, Callback = function(New) WallHack.Crosshair.Settings.GapSize = New end, Min = 0, Max = 20 })
+CrosshairSettings:AddDropdown({ Name = "Position", Value = "Mouse", Callback = function(New) WallHack.Crosshair.Settings.Type = New == "Mouse" and 1 or 2 end, List = {"Mouse", "Center"}, Nothing = "Mouse" })
+
+CrosshairSettings_CenterDot:AddToggle({ Name = "Center Dot", Value = WallHack.Crosshair.Settings.CenterDot, Callback = function(New) WallHack.Crosshair.Settings.CenterDot = New end })
+CrosshairSettings_CenterDot:AddColorpicker({ Name = "Center Dot Color", Value = WallHack.Crosshair.Settings.CenterDotColor, Callback = function(New) WallHack.Crosshair.Settings.CenterDotColor = New end })
+CrosshairSettings_CenterDot:AddSlider({ Name = "Center Dot Size", Value = WallHack.Crosshair.Settings.CenterDotSize, Callback = function(New) WallHack.Crosshair.Settings.CenterDotSize = New end, Min = 1, Max = 6 })
+
+
+-- player mods shit
+
+local FlyToggleObject = PlayerTab:CreateSection({ Name = "Fly" })
+local WSJSTab = PlayerTab:CreateSection({ Name = "WalkSpeed / JumpPower", Side="Right" })
+
+getgenv().Player_FlySpeed = 50; getgenv().Player_FlyKey = Enum.KeyCode.F; getgenv().Player_WalkSpeedValue = 32; getgenv().Player_JumpPowerValue = 75
+
+local FlyToggle = FlyToggleObject:AddToggle({Name = "Enable Fly", Value = false, Callback = function(state)
+    IsFlying = state; local char, root, hum = LocalPlayer.Character, LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     if not (char and root and hum) then return end
     if IsFlying then
         if FlyBodyGyro then FlyBodyGyro:Destroy() end; if FlyBodyVelocity then FlyBodyVelocity:Destroy() end
@@ -190,28 +206,34 @@ local function ApplyFly(state)
         if FlyBodyGyro then FlyBodyGyro:Destroy(); FlyBodyGyro = nil end; if FlyBodyVelocity then FlyBodyVelocity:Destroy(); FlyBodyVelocity = nil end
         hum:ChangeState(Enum.HumanoidStateType.Running)
     end
-end
-local FlyToggle = FlyToggleObject:toggle({name = "Enable Fly", def = false, callback = ApplyFly})
-FlyToggleObject:slider({name = "Fly Speed", def = 50, max = 100, min = 1, rounding = true, callback = function(v) getgenv().Player_FlySpeed = v end})
-FlyToggleObject:keybind({name = "Fly Key", def = Enum.KeyCode.F, callback = function(key) getgenv().Player_FlyKey = key end})
+end})
+FlyToggleObject:AddSlider({Name = "Fly Speed", Value = 50, Min = 10, Max = 200, Callback = function(v) getgenv().Player_FlySpeed = v end})
 
-local WalkSpeedToggle = WSJSTab:toggle({name = "WalkSpeed", def = false, callback = function(v) local hum = GetHumanoid(LocalPlayer); if hum then hum.WalkSpeed = v and getgenv().Player_WalkSpeedValue or OriginalWalkSpeed end end})
-WSJSTab:slider({name = "Speed Value", def = 32, max = 200, min = 16, rounding = true, callback = function(v) getgenv().Player_WalkSpeedValue = v; if WalkSpeedToggle.current then local hum = GetHumanoid(LocalPlayer); if hum then hum.WalkSpeed = v end end end})
-local JumpPowerToggle = WSJSTab:toggle({name = "JumpPower", def = false, callback = function(v) local hum = GetHumanoid(LocalPlayer); if hum then hum.JumpPower = v and getgenv().Player_JumpPowerValue or OriginalJumpPower end end})
-WSJSTab:slider({name = "JS Value", def = 75, max = 300, min = 50, rounding = true, callback = function(v) getgenv().Player_JumpPowerValue = v; if JumpPowerToggle.current then local hum = GetHumanoid(LocalPlayer); if hum then hum.JumpPower = v end end end})
+local WalkSpeedToggle = WSJSTab:AddToggle({Name = "WalkSpeed", Value = false, Callback = function(v) local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.WalkSpeed = v and getgenv().Player_WalkSpeedValue or OriginalWalkSpeed end end})
+WSJSTab:AddSlider({Name = "Speed Value", Value = 32, Min = 16, Max = 200, Callback = function(v) getgenv().Player_WalkSpeedValue = v; if WalkSpeedToggle.Value then local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.WalkSpeed = v end end end})
+local JumpPowerToggle = WSJSTab:AddToggle({Name = "JumpPower", Value = false, Callback = function(v) local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.JumpPower = v and getgenv().Player_JumpPowerValue or OriginalJumpPower end end})
+WSJSTab:AddSlider({Name = "JS Value", Value = 75, Min = 50, Max = 300, Callback = function(v) getgenv().Player_JumpPowerValue = v; if JumpPowerToggle.Value then local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.JumpPower = v end end end})
 
 
--- functions tab & cons
+-- functions tab & connections
 
-local FunctionsSection = FunctionsTab:section({name = "Functions", side="left", size=150})
-FunctionsSection:button({name = "Reset Settings", callback = function() Aimbot.Functions:ResetSettings(); WallHack.Functions:ResetSettings(); print("Settings Reset") end}) -- Note: Splix does not have a native reset all function.
-FunctionsSection:button({name = "Restart Modules", callback = function() Aimbot.Functions:Restart(); WallHack.Functions:Restart() end})
+local FunctionsSection = FunctionsTab:CreateSection({ Name = "Functions" })
+FunctionsSection:AddButton({ Name = "Reset Settings", Callback = function() Aimbot.Functions:ResetSettings(); WallHack.Functions:ResetSettings(); Library.ResetAll() end })
+FunctionsSection:AddButton({ Name = "Restart Modules", Callback = function() Aimbot.Functions:Restart(); WallHack.Functions:Restart() end })
+FunctionsSection:AddButton({ Name = "Exit", Callback = Library.Unload })
 
 RunService.RenderStepped:Connect(function()
     pcall(function()
         if IsFlying then
-            local camCF, moveVector = Camera.CFrame, Vector3.new(); if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVector += camCF.LookVector end; if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVector -= camCF.LookVector end; if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVector -= camCF.RightVector end; if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVector += camCF.RightVector end; if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveVector += Vector3.new(0,1,0) end; if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveVector -= Vector3.new(0,1,0) end
-            if FlyBodyGyro then FlyBodyGyro.CFrame = camCF end; if FlyBodyVelocity then FlyBodyVelocity.Velocity = moveVector.Magnitude > 0 and moveVector.Unit * getgenv().Player_FlySpeed or Vector3.new(0,0,0) end
+            local camCF, moveVector = Camera.CFrame, Vector3.new()
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVector += camCF.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVector -= camCF.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVector -= camCF.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVector += camCF.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveVector += Vector3.new(0,1,0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveVector -= Vector3.new(0,1,0) end
+            if FlyBodyGyro then FlyBodyGyro.CFrame = camCF end
+            if FlyBodyVelocity then FlyBodyVelocity.Velocity = moveVector.Magnitude > 0 and moveVector.Unit * getgenv().Player_FlySpeed or Vector3.new(0,0,0) end
         end
     end)
 end)
@@ -219,15 +241,15 @@ end)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == getgenv().Player_FlyKey then
-        FlyToggle:set(not FlyToggle.current)
+        FlyToggle:Set(not FlyToggle.Value)
     end
 end)
 
 LocalPlayer.CharacterAdded:Connect(function(character)
     task.wait(0.5)
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then OriginalWalkSpeed, OriginalJumpPower = hum.WalkSpeed, hum.JumpPower end
-    if WalkSpeedToggle.current then hum.WalkSpeed = getgenv().Player_WalkSpeedValue end
-    if JumpPowerToggle.current then hum.JumpPower = getgenv().Player_JumpPowerValue end
+    if WalkSpeedToggle.Value then hum.WalkSpeed = getgenv().Player_WalkSpeedValue end
+    if JumpPowerToggle.Value then hum.JumpPower = getgenv().Player_JumpPowerValue end
 end)
 
-local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then OriginalWalkSpeed, OriginalJumpPower = hum.WalkSpeed, hum.JumpPower end -- i dont know what the point of this is, but it made it work
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid"); if hum then OriginalWalkSpeed, OriginalJumpPower = hum.WalkSpeed, hum.JumpPower end
