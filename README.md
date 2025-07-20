@@ -1,7 +1,7 @@
 # Femboy Hub
 
 ![FEMBOY HUB](./assets/T4BQCLr.gif)
-
+<sub><span style="font-size:1px">im not an image designer</span></sub>
 a femboy themed hub for fps games. built on airhub modules.
 
 # VELOCITY DOES NOT WORK WITH THIS SCRIPT!!!
