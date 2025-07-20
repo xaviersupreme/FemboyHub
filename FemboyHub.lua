@@ -77,12 +77,12 @@ local FunctionsTab = MainFrame:CreateTab({ Name = "Functions" })
 
 -- aimbot tab
 
-local Values = AimbotTab:CreateSection({ Name = "Values" })
+local Values = AimbotTab:CreateSection({ Name = "Aimbot" })
 local Checks = AimbotTab:CreateSection({ Name = "Checks" })
 local ThirdPerson = AimbotTab:CreateSection({ Name = "Third Person" })
 local FOV_Values = AimbotTab:CreateSection({ Name = "Field Of View", Side = "Right" })
 local FOV_Appearance = AimbotTab:CreateSection({ Name = "FOV Circle Appearance", Side = "Right" })
-local TriggerbotS = AimbotTab:CreateSection({ Name = "Triggerbot", Side = "Right" })
+local Triggerbot = AimbotTab:CreateSection({ Name = "Triggerbot", Side = "Right" })
 
 Values:AddToggle({ Name = "Enabled", Value = Aimbot.Settings.Enabled, Callback = function(New) Aimbot.Settings.Enabled = New end })
 Values:AddToggle({ Name = "Toggle", Value = Aimbot.Settings.Toggle, Callback = function(New) Aimbot.Settings.Toggle = New end })
