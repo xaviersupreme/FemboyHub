@@ -1,6 +1,6 @@
 # Femboy Hub
 
-![femboy hub](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGVhbG5uNzJ6cjVyNnVqcXNnaWpoYXlwNWQwOGRiZ3JxMDJuOGY0NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/DrVjQ8hHzFiOJ1CKvg/giphy.gif)
+![FEMBOY HUB](./assets/T4BQCLr.gif)
 
 a femboy themed hub for fps games. built on airhub modules.
 
