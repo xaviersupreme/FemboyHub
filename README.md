@@ -48,4 +48,4 @@ xaviersupreme (for putting it all together)
 
 use at ur own risk, this is an exploit lol. not responsible for bans.
 
-<sub><span style="font-size:10px">this is a secret little easter egg ;)</span></sub>
+<sub><span style="font-size:5px">this is a secret little easter egg ;)</span></sub>
