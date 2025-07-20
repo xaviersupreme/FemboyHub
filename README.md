@@ -1,4 +1,44 @@
-### trying to rewrite everything eeotmoAEMTOSKMETPKMETPOMSKTEOPsmk
+# Femboy Hub
+
+a femboy themed hub for fps games. built on airhub modules.
+
+---
+
+## features
+
+### aim
+- aimbot (duh)
+- fov circle
+- smoothing
+- all the checks (team, wall, etc)
+
+### visuals
+- esp (boxes, names, chams, tracers, head dots, health bars)
+- fully customizable
+
+### player
+- fly
+- walkspeed
+- jumppower
+
+### misc
+- custom crosshair
+
+---
+
+## how to run
+copy this into ur executor
 
 
-i did try to make multiple execution shit but i have no clue how to get the file from github to the workspace folder (nevermind i figures it out)
+```loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/main/FemboyHub.lua"))()```
+
+
+credits
+
+Exunys (for the original airhub modules)
+
+Pepsi (for the ui lib)
+
+xaviersupreme (for putting it all together)
+
+use at ur own risk, this is an exploit lol. not responsible for bans.
