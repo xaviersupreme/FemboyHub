@@ -1,5 +1,7 @@
 # Femboy Hub
-https://i.imgur.com/T4BQCLr.gif
+
+![femboy hub](https://i.imgur.com/T4BQCLr.gif)
+
 a femboy themed hub for fps games. built on airhub modules.
 
 # VELOCITY DOES NOT WORK WITH THIS SCRIPT!!!
