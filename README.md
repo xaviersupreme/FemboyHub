@@ -2,6 +2,8 @@
 
 a femboy themed hub for fps games. built on airhub modules.
 
+# VELOCITY DOES NOT WORK WITH THIS SCRIPT!!!
+
 ---
 
 ## features
