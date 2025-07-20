@@ -59,7 +59,7 @@ local MainFrame = Library:CreateWindow({
 	Name = "Femboy Hub",
 	Theme = FemboyTheme,
     Themeable = {
-		Info = "Femboy Hub",
+		Info = "some shit does not work, im workin on it :3",
 		Credit = false
 	}
 })
