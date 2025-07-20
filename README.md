@@ -30,8 +30,9 @@ a femboy themed hub for fps games. built on airhub modules.
 copy this into ur executor
 
 
-```loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/main/FemboyHub.lua"))()```
+``loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/main/FemboyHub.lua"))()``
 
+---
 
 credits
 
