@@ -1,3 +1,7 @@
+-- this is a test script, only aimbot and esp works
+
+
+
 getgenv().AirHub = {}
 
 pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/refs/heads/main/modules/aimbot.lua"))() end)
