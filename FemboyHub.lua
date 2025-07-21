@@ -2,11 +2,10 @@
 -- env & module loading
 
 getgenv().AirHub = {}
-getgenv().FemboyHub = {}
 
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/main/modules/aimbot.lua"))() end)
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/main/modules/esp.lua"))() end)
-pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/main/modules/triggerbot.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/refs/heads/main/modules/aimbot.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/xaviersupreme/FemboyHub/refs/heads/main/modules/esp.lua"))() end)
+
 
 -- fuckass ui lib loader
 
@@ -19,10 +18,10 @@ end
 
 -- services and refs
 
-task.wait(0.5)
-local Aimbot, WallHack, Triggerbot = getgenv().AirHub.Aimbot, getgenv().AirHub.WallHack, getgenv().FemboyHub.Triggerbot
-if not (Aimbot and WallHack and Triggerbot) then
-    warn("FEMBOY HUB: CRITICAL FAILURE - A required module did not load correctly.")
+task.wait(0.5) -- waits for modules to fully load and populate the environment
+local Aimbot, WallHack = getgenv().AirHub.Aimbot, getgenv().AirHub.WallHack
+if not (Aimbot and WallHack) then
+    warn("FEMBOY HUB: CRITICAL FAILURE - modules did not load correctly. The script cannot continue.")
     return
 end
 
@@ -77,12 +76,11 @@ local FunctionsTab = MainFrame:CreateTab({ Name = "Functions" })
 
 -- aimbot tab
 
-local Values = AimbotTab:CreateSection({ Name = "Aimbot" })
+local Values = AimbotTab:CreateSection({ Name = "Values" })
 local Checks = AimbotTab:CreateSection({ Name = "Checks" })
 local ThirdPerson = AimbotTab:CreateSection({ Name = "Third Person" })
 local FOV_Values = AimbotTab:CreateSection({ Name = "Field Of View", Side = "Right" })
 local FOV_Appearance = AimbotTab:CreateSection({ Name = "FOV Circle Appearance", Side = "Right" })
-local Triggerbot = AimbotTab:CreateSection({ Name = "Triggerbot", Side = "Right" })
 
 Values:AddToggle({ Name = "Enabled", Value = Aimbot.Settings.Enabled, Callback = function(New) Aimbot.Settings.Enabled = New end })
 Values:AddToggle({ Name = "Toggle", Value = Aimbot.Settings.Toggle, Callback = function(New) Aimbot.Settings.Toggle = New end })
@@ -108,9 +106,6 @@ FOV_Appearance:AddSlider({ Name = "Thickness", Value = Aimbot.FOVSettings.Thickn
 FOV_Appearance:AddColorpicker({ Name = "Color", Value = Aimbot.FOVSettings.Color, Callback = function(New) Aimbot.FOVSettings.Color = New end })
 FOV_Appearance:AddColorpicker({ Name = "Locked Color", Value = Aimbot.FOVSettings.LockedColor, Callback = function(New) Aimbot.FOVSettings.LockedColor = New end })
 
-TriggerbotSection:AddToggle({ Name = "Enabled", Value = Triggerbot.Settings.Enabled, Callback = function(New) Triggerbot.Settings.Enabled = New end })
-TriggerbotSection:AddKeybind({ Name = "Hotkey", Value = Triggerbot.Settings.Hotkey, Callback = function(New) Triggerbot.Settings.Hotkey = New end })
-TriggerbotSection:AddSlider({ Name = "Delay", Value = Triggerbot.Settings.Delay, Callback = function(New) Triggerbot.Settings.Delay = New end, Min = 0.05, Max = 1, Decimals = 2 })
 
 -- visuals ui
 
