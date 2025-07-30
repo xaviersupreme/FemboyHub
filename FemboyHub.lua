@@ -218,11 +218,6 @@ WSJSTab:AddSlider({Name = "JS Value", Value = 75, Min = 50, Max = 300, Callback 
 
 -- functions tab & connections
 
-local FunctionsSection = FunctionsTab:CreateSection({ Name = "Functions" })
-FunctionsSection:AddButton({ Name = "Reset Settings", Callback = function() Aimbot.Functions:ResetSettings(); WallHack.Functions:ResetSettings(); Library.ResetAll() end })
-FunctionsSection:AddButton({ Name = "Restart Modules", Callback = function() Aimbot.Functions:Restart(); WallHack.Functions:Restart() end })
-FunctionsSection:AddButton({ Name = "Exit", Callback = Library.Unload })
-
 RunService.RenderStepped:Connect(function()
     pcall(function()
         if IsFlying then
